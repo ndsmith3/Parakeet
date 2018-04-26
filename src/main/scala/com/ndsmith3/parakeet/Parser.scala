@@ -10,12 +10,18 @@ object Parser {
 
   def parse(tokens: List[Token]): AbstractSyntaxTree = expression(tokens)._1
 
-  def factor(tokens: List[Token]): IntermediateAST = tokens match {
+  private def factor(tokens: List[Token]): IntermediateAST = tokens match {
     case (int: IntegerToken) :: tail => (Constant(int), tail)
+    case LeftParenthesis :: tail     => innerExpression(tail)
     case _                           => throw new Exception("Invalid Character")
   }
 
-  def term(tokens: List[Token]): IntermediateAST = {
+  private def innerExpression(tokens: List[Token]): IntermediateAST = {
+    val (node, currTokens) = expression(tokens)
+    (node, currTokens.tail)
+  }
+
+  private def term(tokens: List[Token]): IntermediateAST = {
     val (beginningNode, currTokens) = factor(tokens)
 
     currTokens match {
@@ -25,7 +31,7 @@ object Parser {
   }
 
   @tailrec
-  def accumulateTerm(currNode: AbstractSyntaxTree, tokens: List[Token]): IntermediateAST = {
+  private def accumulateTerm(currNode: AbstractSyntaxTree, tokens: List[Token]): IntermediateAST = {
     lazy val (right, currTokens) = factor(tokens.tail)
 
     tokens match {
@@ -37,7 +43,7 @@ object Parser {
     }
   }
 
-  def expression(tokens: List[Token]): IntermediateAST = {
+  private def expression(tokens: List[Token]): IntermediateAST = {
     val (beginningNode, currTokens) = term(tokens)
 
     currTokens match {
@@ -47,7 +53,7 @@ object Parser {
   }
 
   @tailrec
-  def accumulateExpression(currNode: AbstractSyntaxTree, tokens: List[Token]): IntermediateAST = {
+  private def accumulateExpression(currNode: AbstractSyntaxTree, tokens: List[Token]): IntermediateAST = {
     lazy val (right, currTokens) = term(tokens.tail)
 
     tokens match {
