@@ -6,46 +6,56 @@ import com.ndsmith3.parakeet.lexer._
 import scala.annotation.tailrec
 
 object Parser {
+  type IntermediateAST = (AbstractSyntaxTree, List[Token])
+
   def parse(tokens: List[Token]): AbstractSyntaxTree = expression(tokens)._1
 
-  def factor(tokens: List[Token]): (AbstractSyntaxTree, List[Token]) = tokens match {
+  def factor(tokens: List[Token]): IntermediateAST = tokens match {
     case (int: IntegerToken) :: tail => (Constant(int), tail)
     case _                           => throw new Exception("Invalid Character")
   }
 
-  def term(tokens: List[Token]): (AbstractSyntaxTree, List[Token]) = {
+  def term(tokens: List[Token]): IntermediateAST = {
     val (beginningNode, currTokens) = factor(tokens)
-    currTokens match {
-      case (Add | Subtract) :: _ => accumulateTerm(beginningNode, currTokens)
-      case _                     => (beginningNode, currTokens)
-    }
-  }
 
-  @tailrec
-  def accumulateTerm(currNode: AbstractSyntaxTree, tokens: List[Token]): (AbstractSyntaxTree, List[Token]) = {
-    tokens match {
-      case (Add | Subtract) :: _ =>
-        val (right, currTokens) = factor(tokens.tail)
-        accumulateTerm(BinaryOperation(currNode, tokens.head.asInstanceOf[BinaryOperationToken], right), currTokens)
-      case _ => (currNode, tokens)
-    }
-  }
-
-  def expression(tokens: List[Token]): (AbstractSyntaxTree, List[Token]) = {
-    val (beginningNode, currTokens) = term(tokens)
     currTokens match {
-      case (Multiply | Divide) :: _ => accumulateExpression(beginningNode, currTokens)
+      case (Multiply | Divide) :: _ => accumulateTerm(beginningNode, currTokens)
       case _                        => (beginningNode, currTokens)
     }
   }
 
   @tailrec
-  def accumulateExpression(currNode: AbstractSyntaxTree, tokens: List[Token]): (AbstractSyntaxTree, List[Token]) =
+  def accumulateTerm(currNode: AbstractSyntaxTree, tokens: List[Token]): IntermediateAST = {
+    lazy val (right, currTokens) = factor(tokens.tail)
+
     tokens match {
-      case (Multiply | Divide) :: _ =>
-        val (right, currTokens) = term(tokens.tail)
-        accumulateExpression(BinaryOperation(currNode, tokens.head.asInstanceOf[BinaryOperationToken], right),
-                             currTokens)
+      case Multiply :: _ =>
+        accumulateTerm(BinaryOperation(currNode, Multiply, right), currTokens)
+      case Divide :: _ =>
+        accumulateTerm(BinaryOperation(currNode, Divide, right), currTokens)
       case _ => (currNode, tokens)
     }
+  }
+
+  def expression(tokens: List[Token]): IntermediateAST = {
+    val (beginningNode, currTokens) = term(tokens)
+
+    currTokens match {
+      case (Add | Subtract) :: _ => accumulateExpression(beginningNode, currTokens)
+      case _                     => (beginningNode, currTokens)
+    }
+  }
+
+  @tailrec
+  def accumulateExpression(currNode: AbstractSyntaxTree, tokens: List[Token]): IntermediateAST = {
+    lazy val (right, currTokens) = term(tokens.tail)
+
+    tokens match {
+      case Add :: _ =>
+        accumulateExpression(BinaryOperation(currNode, Add, right), currTokens)
+      case Subtract :: _ =>
+        accumulateExpression(BinaryOperation(currNode, Subtract, right), currTokens)
+      case _ => (currNode, tokens)
+    }
+  }
 }

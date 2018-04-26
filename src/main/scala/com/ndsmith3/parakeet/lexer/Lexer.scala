@@ -5,12 +5,10 @@ import scala.annotation.tailrec
 object Lexer {
   def tokenize(input: String): List[Token] = {
     @tailrec
-    def tokenizeInput(currString: String, currTokens: List[Option[Token]] = Nil): List[Token] =
-      if (currString.isEmpty) currTokens.flatten
-      else {
-        val (token, newString) = getToken(currString)
-        tokenizeInput(newString, token +: currTokens)
-      }
+    def tokenizeInput(currString: String, currTokens: List[Option[Token]] = Nil): List[Token] = {
+      lazy val (token, newString) = getToken(currString)
+      if (currString.isEmpty) currTokens.flatten else tokenizeInput(newString, currTokens :+ token)
+    }
 
     tokenizeInput(input)
   }
