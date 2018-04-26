@@ -1,8 +1,11 @@
 package com.ndsmith3.parakeet.cli
 
 import com.ndsmith3.parakeet.Interpreter
+import scala.io.StdIn.readLine
 
 object Parakeet extends App {
-  val input: String = "1 + 2 * (6 / 2)"
-  Interpreter.interpret(input)
+  while (true) {
+    val input = readLine("parakeet> ")
+    Interpreter.interpret(input)
+  }
 }
