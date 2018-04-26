@@ -4,5 +4,5 @@ import com.ndsmith3.parakeet.Interpreter
 
 object Parakeet extends App {
   val input: String = "1 + 2 * (6 / 2)"
-  println(Interpreter.interpret(input))
+  Interpreter.interpret(input)
 }

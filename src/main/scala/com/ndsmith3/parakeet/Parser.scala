@@ -1,6 +1,6 @@
 package com.ndsmith3.parakeet
 
-import com.ndsmith3.parakeet.ast.{AbstractSyntaxTree, BinaryOperation, Constant}
+import com.ndsmith3.parakeet.ast.{AbstractSyntaxTree, BinaryOperation, Integer}
 import com.ndsmith3.parakeet.lexer._
 
 import scala.annotation.tailrec
@@ -11,14 +11,15 @@ object Parser {
   def parse(tokens: List[Token]): AbstractSyntaxTree = expression(tokens)._1
 
   private def factor(tokens: List[Token]): IntermediateAST = tokens match {
-    case (int: IntegerToken) :: tail => (Constant(int), tail)
+    case (int: IntegerToken) :: tail => (Integer(int), tail)
     case LeftParenthesis :: tail     => innerExpression(tail)
     case _                           => throw new Exception("Invalid Character")
   }
 
   private def innerExpression(tokens: List[Token]): IntermediateAST = {
     val (node, currTokens) = expression(tokens)
-    (node, currTokens.tail)
+    if (currTokens.head == RightParenthesis) (node, currTokens.tail)
+    else throw new Exception("Expected closing parenthesis.")
   }
 
   private def term(tokens: List[Token]): IntermediateAST = {
@@ -35,11 +36,9 @@ object Parser {
     lazy val (right, currTokens) = factor(tokens.tail)
 
     tokens match {
-      case Multiply :: _ =>
-        accumulateTerm(BinaryOperation(currNode, Multiply, right), currTokens)
-      case Divide :: _ =>
-        accumulateTerm(BinaryOperation(currNode, Divide, right), currTokens)
-      case _ => (currNode, tokens)
+      case Multiply :: _ => accumulateTerm(BinaryOperation(currNode, Multiply, right), currTokens)
+      case Divide :: _   => accumulateTerm(BinaryOperation(currNode, Divide, right), currTokens)
+      case _             => (currNode, tokens)
     }
   }
 
@@ -57,11 +56,9 @@ object Parser {
     lazy val (right, currTokens) = term(tokens.tail)
 
     tokens match {
-      case Add :: _ =>
-        accumulateExpression(BinaryOperation(currNode, Add, right), currTokens)
-      case Subtract :: _ =>
-        accumulateExpression(BinaryOperation(currNode, Subtract, right), currTokens)
-      case _ => (currNode, tokens)
+      case Add :: _      => accumulateExpression(BinaryOperation(currNode, Add, right), currTokens)
+      case Subtract :: _ => accumulateExpression(BinaryOperation(currNode, Subtract, right), currTokens)
+      case _             => (currNode, tokens)
     }
   }
 }

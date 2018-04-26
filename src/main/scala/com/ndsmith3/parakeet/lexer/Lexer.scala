@@ -20,7 +20,7 @@ object Lexer {
     case '*'                  => (Some(Multiply), str.tail)
     case '/'                  => (Some(Divide), str.tail)
     case '('                  => (Some(LeftParenthesis), str.tail)
-    case ')'                  => (Some(LeftParenthesis), str.tail)
+    case ')'                  => (Some(RightParenthesis), str.tail)
     case char if char.isDigit => parseInteger(str)
   }
 
