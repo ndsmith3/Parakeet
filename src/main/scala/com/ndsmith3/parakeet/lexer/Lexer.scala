@@ -15,12 +15,13 @@ object Lexer {
 
   private def getToken(str: String): (Option[Token], String) = str.head match {
     case ' '                  => (None, str.tail)
-    case '+'                  => (Some(Add), str.tail)
-    case '-'                  => (Some(Subtract), str.tail)
-    case '*'                  => (Some(Multiply), str.tail)
-    case '/'                  => (Some(Divide), str.tail)
+    case '+'                  => (Some(AddToken), str.tail)
+    case '-'                  => (Some(SubtractToken), str.tail)
+    case '*'                  => (Some(MultiplyToken), str.tail)
+    case '/'                  => (Some(DivideToken), str.tail)
     case '('                  => (Some(LeftParenthesis), str.tail)
     case ')'                  => (Some(RightParenthesis), str.tail)
+    case '.'                  => parseFloat(str, "")
     case char if char.isDigit => parseNumber(str)
   }
 

@@ -1,6 +1,6 @@
 package com.ndsmith3.parakeet
 
-import com.ndsmith3.parakeet.ast.{AbstractSyntaxTree, BinaryOperation, Integer, Float}
+import com.ndsmith3.parakeet.ast._
 import com.ndsmith3.parakeet.lexer._
 
 import scala.annotation.tailrec
@@ -11,8 +11,8 @@ object Parser {
   def parse(tokens: List[Token]): AbstractSyntaxTree = expression(tokens)._1
 
   private def factor(tokens: List[Token]): IntermediateAST = tokens match {
-    case (int: IntegerToken) :: tail => (Integer(int), tail)
-    case (float: FloatToken) :: tail => (Float(float), tail)
+    case (int: IntegerToken) :: tail => (Integer(int.value), tail)
+    case (float: FloatToken) :: tail => (Float(float.value), tail)
     case LeftParenthesis :: tail     => innerExpression(tail)
     case _                           => throw new Exception("Invalid Character")
   }
@@ -27,8 +27,8 @@ object Parser {
     val (beginningNode, currTokens) = factor(tokens)
 
     currTokens match {
-      case (Multiply | Divide) :: _ => accumulateTerm(beginningNode, currTokens)
-      case _                        => (beginningNode, currTokens)
+      case (MultiplyToken | DivideToken) :: _ => accumulateTerm(beginningNode, currTokens)
+      case _                                  => (beginningNode, currTokens)
     }
   }
 
@@ -37,9 +37,9 @@ object Parser {
     lazy val (right, currTokens) = factor(tokens.tail)
 
     tokens match {
-      case Multiply :: _ => accumulateTerm(BinaryOperation(currNode, Multiply, right), currTokens)
-      case Divide :: _   => accumulateTerm(BinaryOperation(currNode, Divide, right), currTokens)
-      case _             => (currNode, tokens)
+      case MultiplyToken :: _ => accumulateTerm(BinaryOperation(currNode, Multiply, right), currTokens)
+      case DivideToken :: _   => accumulateTerm(BinaryOperation(currNode, Divide, right), currTokens)
+      case _                  => (currNode, tokens)
     }
   }
 
@@ -47,8 +47,8 @@ object Parser {
     val (beginningNode, currTokens) = term(tokens)
 
     currTokens match {
-      case (Add | Subtract) :: _ => accumulateExpression(beginningNode, currTokens)
-      case _                     => (beginningNode, currTokens)
+      case (AddToken | SubtractToken) :: _ => accumulateExpression(beginningNode, currTokens)
+      case _                               => (beginningNode, currTokens)
     }
   }
 
@@ -57,9 +57,9 @@ object Parser {
     lazy val (right, currTokens) = term(tokens.tail)
 
     tokens match {
-      case Add :: _      => accumulateExpression(BinaryOperation(currNode, Add, right), currTokens)
-      case Subtract :: _ => accumulateExpression(BinaryOperation(currNode, Subtract, right), currTokens)
-      case _             => (currNode, tokens)
+      case AddToken :: _      => accumulateExpression(BinaryOperation(currNode, Add, right), currTokens)
+      case SubtractToken :: _ => accumulateExpression(BinaryOperation(currNode, Subtract, right), currTokens)
+      case _                  => (currNode, tokens)
     }
   }
 }
