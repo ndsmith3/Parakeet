@@ -1,6 +1,6 @@
 package com.ndsmith3.parakeet
 
-import com.ndsmith3.parakeet.ast.{AbstractSyntaxTree, BinaryOperation, Integer}
+import com.ndsmith3.parakeet.ast.{AbstractSyntaxTree, BinaryOperation, Integer, Float}
 import com.ndsmith3.parakeet.lexer._
 
 import scala.annotation.tailrec
@@ -12,6 +12,7 @@ object Parser {
 
   private def factor(tokens: List[Token]): IntermediateAST = tokens match {
     case (int: IntegerToken) :: tail => (Integer(int), tail)
+    case (float: FloatToken) :: tail => (Float(float), tail)
     case LeftParenthesis :: tail     => innerExpression(tail)
     case _                           => throw new Exception("Invalid Character")
   }
