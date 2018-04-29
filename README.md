@@ -8,12 +8,13 @@ A statically typed, lazily evaluated functional programming language.
     * ~~+, -, *, / operators~~
     * ~~Modulus operator~~
     * ~~Exponent operator~~
-* String Evalution
+* ~~Primitive String Evalution~~
 * Type Restriction
 * Entrypoint definition
 * Primitive Type Storage
-* Lazy Evaluation
 * Algebraic Data Type evalution
+* String Data Type
+* Lazy Evaluation
 * Custom Data Type Storage
 * Pattern Matching
 * Type Inference
