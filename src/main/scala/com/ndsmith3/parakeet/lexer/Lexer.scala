@@ -23,8 +23,19 @@ object Lexer {
     case '^'                  => (Some(PowerToken), str.tail)
     case '('                  => (Some(LeftParenthesis), str.tail)
     case ')'                  => (Some(RightParenthesis), str.tail)
+    case '"'                  => parseString(str)
     case '.'                  => parseFloat(str, "")
     case char if char.isDigit => parseNumber(str)
+  }
+
+  private def parseString(str: String): (Option[StringToken], String) = {
+    def scan(currStr: String, currStringValue: String = ""): (Option[StringToken], String) = currStr.head match {
+      case '"'  => (Some(StringToken(currStringValue)), currStr.tail)
+      case char => scan(currStr.tail, currStringValue + char)
+    }
+
+    // Scan on tail to avoid the first quotation mark
+    scan(str.tail)
   }
 
   private def parseNumber(str: String): (Option[NumericToken], String) = {

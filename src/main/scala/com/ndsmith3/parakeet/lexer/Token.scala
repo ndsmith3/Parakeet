@@ -1,11 +1,12 @@
 package com.ndsmith3.parakeet.lexer
 
 trait Token
-case object LeftParenthesis  extends Token
-case object RightParenthesis extends Token
+case object LeftParenthesis           extends Token
+case object RightParenthesis          extends Token
+case class StringToken(value: String) extends Token
 
-trait NumericToken                  extends Token
-case class IntegerToken(value: Int) extends NumericToken
+trait NumericToken                   extends Token
+case class IntegerToken(value: Int)  extends NumericToken
 case class FloatToken(value: Double) extends NumericToken
 
 trait BinaryOperationToken extends Token
