@@ -6,7 +6,7 @@ case object RightParenthesis extends Token
 
 trait NumericToken                  extends Token
 case class IntegerToken(value: Int) extends NumericToken
-case class FloatToken(value: Float) extends NumericToken
+case class FloatToken(value: Double) extends NumericToken
 
 trait BinaryOperationToken extends Token
 case object AddToken       extends BinaryOperationToken
