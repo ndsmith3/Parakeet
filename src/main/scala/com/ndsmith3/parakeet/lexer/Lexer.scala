@@ -43,7 +43,7 @@ object Lexer {
   private def parseFloat(str: String, floatString: String): (Option[FloatToken], String) = {
     @tailrec
     def scan(currStr: String, currFloatString: String = floatString): (Option[FloatToken], String) =
-      if (isCompleteNumber(currStr)) (Some(FloatToken(currFloatString.toFloat)), currStr)
+      if (isCompleteNumber(currStr)) (Some(FloatToken(currFloatString.toDouble)), currStr)
       else scan(currStr.tail, currFloatString + currStr.head)
 
     scan(str)

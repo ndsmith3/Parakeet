@@ -1,7 +1,5 @@
 package com.ndsmith3.parakeet.ast
 
-trait AbstractSyntaxTree
-
 trait Numeric extends AbstractSyntaxTree {
   val value: AnyVal
   def +(that: Numeric): Numeric
@@ -77,33 +75,3 @@ case class Float(value: Double) extends Numeric {
     case Float(thatValue)   => Float(Math.pow(value, thatValue))
   }
 }
-
-trait Operator extends AbstractSyntaxTree {
-  def eval(x: Numeric, y: Numeric): Numeric
-}
-
-case object Add extends Operator {
-  def eval(x: Numeric, y: Numeric): Numeric = x + y
-}
-
-case object Subtract extends Operator {
-  def eval(x: Numeric, y: Numeric): Numeric = x - y
-}
-
-case object Multiply extends Operator {
-  def eval(x: Numeric, y: Numeric): Numeric = x * y
-}
-
-case object Divide extends Operator {
-  def eval(x: Numeric, y: Numeric): Numeric = x / y
-}
-
-case object Modulus extends Operator {
-  def eval(x: Numeric, y: Numeric): Numeric = x % y
-}
-
-case object Power extends Operator {
-  def eval(x: Numeric, y: Numeric): Numeric = x ^ y
-}
-
-case class BinaryOperation(left: AbstractSyntaxTree, op: Operator, right: AbstractSyntaxTree) extends AbstractSyntaxTree
