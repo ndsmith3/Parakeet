@@ -9,6 +9,7 @@ trait Numeric extends AbstractSyntaxTree {
   def *(that: Numeric): Numeric
   def /(that: Numeric): Numeric
   def %(that: Numeric): Numeric
+  def ^(that: Numeric): Numeric
 
   override def toString: String = value.toString
 }
@@ -38,6 +39,11 @@ case class Integer(value: Int) extends Numeric {
     case Integer(thatValue) => Integer(value % thatValue)
     case Float(thatValue)   => Float(value   % thatValue)
   }
+
+  override def ^(that: Numeric): Numeric = that match {
+    case Integer(thatValue) => Integer(Math.pow(value, thatValue).toInt)
+    case Float(thatValue)   => Float(Math.pow(value, thatValue).toFloat)
+  }
 }
 
 case class Float(value: scala.Float) extends Numeric {
@@ -65,6 +71,11 @@ case class Float(value: scala.Float) extends Numeric {
     case Integer(thatValue) => Float(value % thatValue)
     case Float(thatValue)   => Float(value % thatValue)
   }
+
+  override def ^(that: Numeric): Numeric = that match {
+    case Integer(thatValue) => Float(Math.pow(value, thatValue).toFloat)
+    case Float(thatValue)   => Float(Math.pow(value, thatValue).toFloat)
+  }
 }
 
 trait Operator extends AbstractSyntaxTree {
@@ -89,6 +100,10 @@ case object Divide extends Operator {
 
 case object Modulus extends Operator {
   def eval(x: Numeric, y: Numeric): Numeric = x % y
+}
+
+case object Power extends Operator {
+  def eval(x: Numeric, y: Numeric): Numeric = x ^ y
 }
 
 case class BinaryOperation(left: AbstractSyntaxTree, op: Operator, right: AbstractSyntaxTree) extends AbstractSyntaxTree

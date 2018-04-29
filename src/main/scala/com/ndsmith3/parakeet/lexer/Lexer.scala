@@ -20,6 +20,7 @@ object Lexer {
     case '*'                  => (Some(MultiplyToken), str.tail)
     case '/'                  => (Some(DivideToken), str.tail)
     case '%'                  => (Some(ModulusToken), str.tail)
+    case '^'                  => (Some(PowerToken), str.tail)
     case '('                  => (Some(LeftParenthesis), str.tail)
     case ')'                  => (Some(RightParenthesis), str.tail)
     case '.'                  => parseFloat(str, "")

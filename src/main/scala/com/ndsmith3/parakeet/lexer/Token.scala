@@ -14,3 +14,4 @@ case object SubtractToken  extends BinaryOperationToken
 case object MultiplyToken  extends BinaryOperationToken
 case object DivideToken    extends BinaryOperationToken
 case object ModulusToken   extends BinaryOperationToken
+case object PowerToken     extends BinaryOperationToken

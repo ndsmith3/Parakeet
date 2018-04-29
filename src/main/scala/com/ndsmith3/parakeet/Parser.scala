@@ -23,8 +23,26 @@ object Parser {
     else throw new Exception("Expected closing parenthesis.")
   }
 
-  private def term(tokens: List[Token]): IntermediateAST = {
+  private def pow(tokens: List[Token]): IntermediateAST = {
     val (beginningNode, currTokens) = factor(tokens)
+
+    currTokens match {
+      case PowerToken :: _ => accumulatePow(beginningNode, currTokens)
+      case _               => (beginningNode, currTokens)
+    }
+  }
+
+  private def accumulatePow(currNode: AbstractSyntaxTree, tokens: List[Token]): IntermediateAST = {
+    lazy val (right, currTokens) = factor(tokens.tail)
+
+    tokens match {
+      case PowerToken :: _ => accumulatePow(BinaryOperation(currNode, Power, right), currTokens)
+      case _               => (currNode, tokens)
+    }
+  }
+
+  private def term(tokens: List[Token]): IntermediateAST = {
+    val (beginningNode, currTokens) = pow(tokens)
 
     currTokens match {
       case (MultiplyToken | DivideToken | ModulusToken) :: _ => accumulateTerm(beginningNode, currTokens)
