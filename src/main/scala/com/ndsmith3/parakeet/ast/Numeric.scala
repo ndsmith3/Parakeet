@@ -1,6 +1,6 @@
 package com.ndsmith3.parakeet.ast
 
-trait Numeric extends AbstractSyntaxTree {
+trait Numeric extends Primitive {
   val value: AnyVal
   def +(that: Numeric): Numeric
   def -(that: Numeric): Numeric

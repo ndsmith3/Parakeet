@@ -11,15 +11,16 @@ object Parser {
   def parse(tokens: List[Token]): AbstractSyntaxTree = expression(tokens)._1
 
   private def factor(tokens: List[Token]): IntermediateAST = tokens match {
-    case (int: IntegerToken) :: tail => (Integer(int.value), tail)
-    case (float: FloatToken) :: tail => (Float(float.value), tail)
-    case LeftParenthesis :: tail     => innerExpression(tail)
-    case _                           => throw new Exception("Invalid Character")
+    case (int: IntegerToken) :: tail  => (Integer(int.value), tail)
+    case (float: FloatToken) :: tail  => (Float(float.value), tail)
+    case (str: StringToken) :: tail   => (ASTString(str.value), tail)
+    case LeftParenthesisToken :: tail => innerExpression(tail)
+    case _                            => throw new Exception("Invalid Character")
   }
 
   private def innerExpression(tokens: List[Token]): IntermediateAST = {
     val (node, currTokens) = expression(tokens)
-    if (currTokens.head == RightParenthesis) (node, currTokens.tail)
+    if (currTokens.head == RightParenthesisToken) (node, currTokens.tail)
     else throw new Exception("Expected closing parenthesis.")
   }
 
