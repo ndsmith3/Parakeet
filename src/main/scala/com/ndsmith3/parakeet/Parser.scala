@@ -32,6 +32,7 @@ object Parser {
     }
   }
 
+  @tailrec
   private def accumulatePow(currNode: AbstractSyntaxTree, tokens: List[Token]): IntermediateAST = {
     lazy val (right, currTokens) = factor(tokens.tail)
 
