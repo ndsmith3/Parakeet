@@ -27,8 +27,8 @@ object Parser {
     val (beginningNode, currTokens) = factor(tokens)
 
     currTokens match {
-      case (MultiplyToken | DivideToken) :: _ => accumulateTerm(beginningNode, currTokens)
-      case _                                  => (beginningNode, currTokens)
+      case (MultiplyToken | DivideToken | ModulusToken) :: _ => accumulateTerm(beginningNode, currTokens)
+      case _                                                 => (beginningNode, currTokens)
     }
   }
 
@@ -39,6 +39,7 @@ object Parser {
     tokens match {
       case MultiplyToken :: _ => accumulateTerm(BinaryOperation(currNode, Multiply, right), currTokens)
       case DivideToken :: _   => accumulateTerm(BinaryOperation(currNode, Divide, right), currTokens)
+      case ModulusToken :: _  => accumulateTerm(BinaryOperation(currNode, Modulus, right), currTokens)
       case _                  => (currNode, tokens)
     }
   }

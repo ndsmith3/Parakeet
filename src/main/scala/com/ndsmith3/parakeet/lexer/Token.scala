@@ -9,7 +9,8 @@ case class IntegerToken(value: Int) extends NumericToken
 case class FloatToken(value: Float) extends NumericToken
 
 trait BinaryOperationToken extends Token
-case object AddToken            extends BinaryOperationToken
-case object SubtractToken       extends BinaryOperationToken
-case object MultiplyToken       extends BinaryOperationToken
-case object DivideToken         extends BinaryOperationToken
+case object AddToken       extends BinaryOperationToken
+case object SubtractToken  extends BinaryOperationToken
+case object MultiplyToken  extends BinaryOperationToken
+case object DivideToken    extends BinaryOperationToken
+case object ModulusToken   extends BinaryOperationToken

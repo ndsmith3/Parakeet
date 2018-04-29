@@ -19,6 +19,7 @@ object Lexer {
     case '-'                  => (Some(SubtractToken), str.tail)
     case '*'                  => (Some(MultiplyToken), str.tail)
     case '/'                  => (Some(DivideToken), str.tail)
+    case '%'                  => (Some(ModulusToken), str.tail)
     case '('                  => (Some(LeftParenthesis), str.tail)
     case ')'                  => (Some(RightParenthesis), str.tail)
     case '.'                  => parseFloat(str, "")
@@ -28,21 +29,20 @@ object Lexer {
   private def parseNumber(str: String): (Option[NumericToken], String) = {
     @tailrec
     def scan(currStr: String, currIntString: String = ""): (Option[NumericToken], String) =
-      if (currStr.isEmpty || !currStr.head.isDigit && currStr.head != '.')
-        (Some(IntegerToken(currIntString.toInt)), currStr)
-      else if (currStr.head == '.')
-        parseFloat(currStr, currIntString)
-      else
-        scan(currStr.tail, currIntString + currStr.head)
+      if (isCompleteNumber(currStr)) (Some(IntegerToken(currIntString.toInt)), currStr)
+      else if (isFloat(currStr)) parseFloat(currStr, currIntString)
+      else scan(currStr.tail, currIntString + currStr.head)
 
     scan(str)
   }
 
+  private def isCompleteNumber(str: String): Boolean = str.isEmpty || !str.head.isDigit && str.head != '.'
+  private def isFloat(str: String): Boolean          = str.head == '.'
+
   private def parseFloat(str: String, floatString: String): (Option[FloatToken], String) = {
     @tailrec
     def scan(currStr: String, currFloatString: String = floatString): (Option[FloatToken], String) =
-      if (currStr.isEmpty || !currStr.head.isDigit && currStr.head != '.')
-        (Some(FloatToken(currFloatString.toFloat)), currStr)
+      if (isCompleteNumber(currStr)) (Some(FloatToken(currFloatString.toFloat)), currStr)
       else scan(currStr.tail, currFloatString + currStr.head)
 
     scan(str)
