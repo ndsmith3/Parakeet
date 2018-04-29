@@ -5,4 +5,6 @@ package com.ndsmith3.parakeet.ast
   Strings will be implemented as a list of characters, as opposed to a primitive type.
  */
 
-case class ASTString(value: String) extends Primitive
+case class ASTString(value: String) extends Primitive {
+  override def toString: String = value
+}
