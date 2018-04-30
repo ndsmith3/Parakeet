@@ -1,6 +1,7 @@
 package com.ndsmith3.parakeet
 
-import com.ndsmith3.parakeet.ast.{ASTString, AbstractSyntaxTree, BinaryOperation, Float, Integer, Numeric, Primitive}
+import com.ndsmith3.parakeet.ast._
+import com.ndsmith3.parakeet.ast.Operator.eval
 import com.ndsmith3.parakeet.lexer.{Lexer, Token}
 
 object Interpreter {
@@ -15,7 +16,7 @@ object Interpreter {
       case int: Integer                           => int
       case float: Float                           => float
       case str: ASTString                         => str
-      case BinaryOperation(left, operator, right) => operator.eval(visit(left), visit(right))
+      case BinaryOperation(left, operator, right) => eval(operator, visit(left), visit(right))
       case _                                      => throw new Exception("Unknown Node Type")
     }
 
