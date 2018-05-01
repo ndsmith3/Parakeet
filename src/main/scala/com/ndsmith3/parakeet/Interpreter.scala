@@ -4,6 +4,8 @@ import com.ndsmith3.parakeet.ast._
 import com.ndsmith3.parakeet.ast.Operator.eval
 import com.ndsmith3.parakeet.lexer.{Lexer, Token}
 
+import scala.language.implicitConversions
+
 object Interpreter {
   def interpret(input: String): AbstractSyntaxTree = {
     val tokens: List[Token]     = Lexer.tokenize(input)
