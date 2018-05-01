@@ -17,6 +17,7 @@ object Interpreter {
     abstractSyntaxTree match {
       case int: Integer                           => int
       case float: Float                           => float
+      case char: Character                        => char
       case str: ASTString                         => str
       case BinaryOperation(left, operator, right) => eval(operator, visit(left), visit(right))
       case _                                      => throw new Exception("Unknown Node Type")

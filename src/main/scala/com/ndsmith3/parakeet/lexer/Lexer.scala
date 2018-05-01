@@ -26,6 +26,7 @@ object Lexer {
     case '"'                  => parseString(str)
     case '.'                  => parseFloat(str, "")
     case char if char.isDigit => parseNumber(str)
+    case _                    => throw new Exception("Unexpected Character.")
   }
 
   private def parseString(str: String): (Option[StringToken], String) = {
