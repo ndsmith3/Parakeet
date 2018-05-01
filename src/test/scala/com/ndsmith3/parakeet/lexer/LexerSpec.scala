@@ -52,6 +52,10 @@ class LexerSpec extends FlatSpec {
     assert(Lexer.tokenize(".1") == FloatToken(0.1) :: Nil)
   }
 
+  it should "return Nil when given \"\"" in {
+    assert(Lexer.tokenize("") == Nil)
+  }
+
   it should "throw an UnexpectedCharacterException when given an undefined character" in {
     assertThrows[UnexpectedCharacterException] {
       Lexer.tokenize("#")

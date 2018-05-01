@@ -45,19 +45,19 @@ class ParserSpec extends FlatSpec {
                                                                                                Integer(2)))
   }
 
-  it should "throw an error when there is no closing parenthesis" in {
+  it should "throw a NoClosingParenthesisException when there is no closing parenthesis" in {
     assertThrows[NoClosingParenthesisException] {
       Parser.parse(LeftParenthesisToken :: IntegerToken(1) :: IntegerToken(2) :: Nil)
     }
   }
 
-  it should "throw an error when given a closing parenthesis without an opening parenthesis first" in {
+  it should "throw an UnexpectedTokenException when given a closing parenthesis without an opening parenthesis first" in {
     assertThrows[UnexpectedTokenException] {
       Parser.parse(RightParenthesisToken :: Nil)
     }
   }
 
-  it should "throw an error when given Nil" in {
+  it should "throw an Exception when given Nil" in {
     assertThrows[Exception] {
       Parser.parse(Nil)
     }

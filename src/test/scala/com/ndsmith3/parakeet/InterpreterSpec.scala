@@ -1,9 +1,9 @@
 package com.ndsmith3.parakeet
 
 import com.ndsmith3.parakeet.ast.{ASTString, Float, Integer}
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.FlatSpec
 
-class InterpreterSpec extends FlatSpec with Matchers {
+class InterpreterSpec extends FlatSpec {
   "The Interpreter" should "return an Integer of value 1 when given an input '1'" in {
     val ast = Interpreter.interpret("1")
     assert(ast == Integer(1))
@@ -22,5 +22,11 @@ class InterpreterSpec extends FlatSpec with Matchers {
   it should "return a Int of value 2 when given an input '1 + 1'" in {
     val ast = Interpreter.interpret("1 + 1")
     assert(ast == Integer(2))
+  }
+
+  it should "throw an Exception when given the input \"\"" in {
+    assertThrows[Exception] {
+      Interpreter.interpret("")
+    }
   }
 }
