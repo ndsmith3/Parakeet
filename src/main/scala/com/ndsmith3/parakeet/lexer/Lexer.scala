@@ -1,5 +1,7 @@
 package com.ndsmith3.parakeet.lexer
 
+import com.ndsmith3.parakeet.exception.UnexpectedCharacterException
+
 import scala.annotation.tailrec
 
 object Lexer {
@@ -26,7 +28,7 @@ object Lexer {
     case '"'                  => parseString(str)
     case '.'                  => parseFloat(str, "")
     case char if char.isDigit => parseNumber(str)
-    case _                    => throw new Exception("Unexpected Character.")
+    case char                 => throw new UnexpectedCharacterException(char)
   }
 
   private def parseString(str: String): (Option[StringToken], String) = {
