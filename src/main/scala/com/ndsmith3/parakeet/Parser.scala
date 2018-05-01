@@ -1,6 +1,7 @@
 package com.ndsmith3.parakeet
 
 import com.ndsmith3.parakeet.ast._
+import com.ndsmith3.parakeet.exception.{NoClosingParenthesisException, UnexpectedTokenException}
 import com.ndsmith3.parakeet.lexer._
 
 import scala.annotation.tailrec
@@ -11,17 +12,19 @@ object Parser {
   def parse(tokens: List[Token]): AbstractSyntaxTree = expression(tokens)._1
 
   private def factor(tokens: List[Token]): IntermediateAST = tokens match {
-    case (int: IntegerToken) :: tail  => (Integer(int.value), tail)
-    case (float: FloatToken) :: tail  => (Float(float.value), tail)
-    case (str: StringToken) :: tail   => (ASTString(str.value), tail)
-    case LeftParenthesisToken :: tail => innerExpression(tail)
-    case _                            => throw new Exception("Invalid Character")
+    case (int: IntegerToken) :: tail    => (Integer(int.value), tail)
+    case (float: FloatToken) :: tail    => (Float(float.value), tail)
+    case (str: StringToken) :: tail     => (ASTString(str.value), tail)
+    case (char: CharacterToken) :: tail => (Character(char.value), tail)
+    case LeftParenthesisToken :: tail   => innerExpression(tail)
+    case token :: _                     => throw new UnexpectedTokenException(token)
+    case Nil                            => throw new Exception("No tokens found")
   }
 
   private def innerExpression(tokens: List[Token]): IntermediateAST = {
     val (node, currTokens) = expression(tokens)
     if (currTokens.head == RightParenthesisToken) (node, currTokens.tail)
-    else throw new Exception("Expected closing parenthesis.")
+    else throw new NoClosingParenthesisException()
   }
 
   private def pow(tokens: List[Token]): IntermediateAST = {
