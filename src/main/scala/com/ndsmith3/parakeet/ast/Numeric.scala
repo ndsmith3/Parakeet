@@ -1,5 +1,7 @@
 package com.ndsmith3.parakeet.ast
 
+import com.ndsmith3.parakeet.exception.CharacterPowerException
+
 trait Numeric extends Primitive {
   val value: AnyVal
   def +(that: Numeric): Numeric
@@ -46,7 +48,7 @@ case class Integer(value: Int) extends Numeric {
   override def ^(that: Numeric): Numeric = that match {
     case Integer(thatValue) => Integer(Math.pow(value, thatValue).toInt)
     case Float(thatValue)   => Float(Math.pow(value, thatValue))
-    case Character(_)       => throw new Exception("Cannot perform exponential on Character.")
+    case Character(_)       => throw new CharacterPowerException()
   }
 }
 
@@ -84,7 +86,7 @@ case class Float(value: Double) extends Numeric {
   override def ^(that: Numeric): Numeric = that match {
     case Integer(thatValue) => Float(Math.pow(value, thatValue))
     case Float(thatValue)   => Float(Math.pow(value, thatValue))
-    case Character(_)       => throw new Exception("Cannot perform exponential on Character.")
+    case Character(_)       => throw new CharacterPowerException()
   }
 }
 
@@ -119,5 +121,5 @@ case class Character(value: Char) extends Numeric {
     case Character(thatValue) => Character((value % thatValue).toChar)
   }
 
-  override def ^(that: Numeric): Numeric = throw new Exception("Cannot perform exponential on Character.")
+  override def ^(that: Numeric): Numeric = throw new CharacterPowerException()
 }
