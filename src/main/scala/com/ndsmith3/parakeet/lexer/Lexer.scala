@@ -16,20 +16,22 @@ object Lexer {
   }
 
   private def getToken(str: String): (Option[Token], String) = str.head match {
-    case ' '                   => (None, str.tail)
-    case '+'                   => (Some(AddToken), str.tail)
-    case '-'                   => (Some(SubtractToken), str.tail)
-    case '*'                   => (Some(MultiplyToken), str.tail)
-    case '/'                   => (Some(DivideToken), str.tail)
-    case '%'                   => (Some(ModulusToken), str.tail)
-    case '^'                   => (Some(PowerToken), str.tail)
-    case '('                   => (Some(LeftParenthesisToken), str.tail)
-    case ')'                   => (Some(RightParenthesisToken), str.tail)
-    case '"'                   => parseString(str)
-    case '.'                   => parseFloat(str, "")
-    case char if char.isDigit  => parseNumber(str)
-    case char if char.isLetter => parseConstantName(str)
-    case char                  => throw new UnexpectedCharacterException(char)
+    case ' '                           => (None, str.tail)
+    case '+'                           => (Some(AddToken), str.tail)
+    case '-'                           => (Some(SubtractToken), str.tail)
+    case '*'                           => (Some(MultiplyToken), str.tail)
+    case '/'                           => (Some(DivideToken), str.tail)
+    case '%'                           => (Some(ModulusToken), str.tail)
+    case '^'                           => (Some(PowerToken), str.tail)
+    case '('                           => (Some(LeftParenthesisToken), str.tail)
+    case ')'                           => (Some(RightParenthesisToken), str.tail)
+    case '"'                           => parseString(str)
+    case '.'                           => parseFloat(str, "")
+    case '='                           => (Some(EqualsToken), str.tail)
+    case 'l' if isAssignStatement(str) => (Some(AssignToken), str.substring(2))
+    case char if char.isDigit          => parseNumber(str)
+    case char if char.isLetter         => parseConstantName(str)
+    case char                          => throw new UnexpectedCharacterException(char)
   }
 
   private def parseString(str: String): (Option[StringToken], String) = {
@@ -63,6 +65,8 @@ object Lexer {
 
     scan(str)
   }
+
+  private def isAssignStatement(str: String): Boolean = str(1) == 'e' && str(2) == 't'
 
   private def parseConstantName(str: String): (Option[ConstantToken], String) = {
     def scan(currStr: String, currNameString: String = ""): (Option[ConstantToken], String) =
