@@ -52,6 +52,18 @@ class LexerSpec extends FlatSpec {
     assert(Lexer.tokenize(".1") == FloatToken(0.1) :: Nil)
   }
 
+  it should "return EqualsToken :: Nil when given \"=\"" in {
+    assert(Lexer.tokenize("=") == EqualsToken :: Nil)
+  }
+
+  it should "return AssignToken :: Nil when given \"let\"" in {
+    assert(Lexer.tokenize("let") == AssignToken :: Nil)
+  }
+
+  it should "return ConstantToken(\"abcdefg\") when given \"abcdefg\"" in {
+    assert(Lexer.tokenize("abcdefg") == ConstantToken("abcdefg") :: Nil)
+  }
+
   it should "return Nil when given \"\"" in {
     assert(Lexer.tokenize("") == Nil)
   }

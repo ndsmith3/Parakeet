@@ -28,7 +28,7 @@ object Lexer {
     case '"'                           => parseString(str)
     case '.'                           => parseFloat(str, "")
     case '='                           => (Some(EqualsToken), str.tail)
-    case 'l' if isAssignStatement(str) => (Some(AssignToken), str.substring(2))
+    case 'l' if isAssignStatement(str) => (Some(AssignToken), str.substring(3))
     case char if char.isDigit          => parseNumber(str)
     case char if char.isLetter         => parseConstantName(str)
     case char                          => throw new UnexpectedCharacterException(char)
@@ -70,7 +70,8 @@ object Lexer {
 
   private def parseConstantName(str: String): (Option[ConstantToken], String) = {
     def scan(currStr: String, currNameString: String = ""): (Option[ConstantToken], String) =
-      if (currStr.head == ' ') (Some(ConstantToken(currNameString)), currStr.tail)
+      if (currStr.isEmpty) (Some(ConstantToken(currNameString)), "")
+      else if (currStr.head == ' ') (Some(ConstantToken(currNameString)), currStr.tail)
       else scan(currStr.tail, currNameString + currStr.head)
 
     scan(str)
