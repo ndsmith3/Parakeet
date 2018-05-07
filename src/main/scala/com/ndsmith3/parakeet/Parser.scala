@@ -11,38 +11,23 @@ object Parser {
 
   def parse(tokens: List[Token]): AbstractSyntaxTree = expression(tokens)._1
 
-  private def factor(tokens: List[Token]): IntermediateAST = tokens match {
-    case (int: IntegerToken) :: tail    => (Integer(int.value), tail)
-    case (float: FloatToken) :: tail    => (Float(float.value), tail)
-    case (str: StringToken) :: tail     => (ASTString(str.value), tail)
-    case (char: CharacterToken) :: tail => (Character(char.value), tail)
-    case LeftParenthesisToken :: tail   => innerExpression(tail)
-    case token :: _                     => throw new UnexpectedTokenException(token)
-    case Nil                            => throw new Exception("No tokens found")
-  }
-
-  private def innerExpression(tokens: List[Token]): IntermediateAST = {
-    val (node, currTokens) = expression(tokens)
-    if (currTokens.head == RightParenthesisToken) (node, currTokens.tail)
-    else throw new NoClosingParenthesisException()
-  }
-
-  private def pow(tokens: List[Token]): IntermediateAST = {
-    val (beginningNode, currTokens) = factor(tokens)
+  private def expression(tokens: List[Token]): IntermediateAST = {
+    val (beginningNode, currTokens) = term(tokens)
 
     currTokens match {
-      case PowerToken :: _ => accumulatePow(beginningNode, currTokens)
-      case _               => (beginningNode, currTokens)
+      case (AddToken | SubtractToken) :: _ => accumulateExpression(beginningNode, currTokens)
+      case _                               => (beginningNode, currTokens)
     }
   }
 
   @tailrec
-  private def accumulatePow(currNode: AbstractSyntaxTree, tokens: List[Token]): IntermediateAST = {
-    lazy val (right, currTokens) = factor(tokens.tail)
+  private def accumulateExpression(currNode: AbstractSyntaxTree, tokens: List[Token]): IntermediateAST = {
+    lazy val (right, currTokens) = term(tokens.tail)
 
     tokens match {
-      case PowerToken :: _ => accumulatePow(BinaryOperation(currNode, Power, right), currTokens)
-      case _               => (currNode, tokens)
+      case AddToken :: _      => accumulateExpression(BinaryOperation(currNode, Add, right), currTokens)
+      case SubtractToken :: _ => accumulateExpression(BinaryOperation(currNode, Subtract, right), currTokens)
+      case _                  => (currNode, tokens)
     }
   }
 
@@ -67,23 +52,45 @@ object Parser {
     }
   }
 
-  private def expression(tokens: List[Token]): IntermediateAST = {
-    val (beginningNode, currTokens) = term(tokens)
+  private def pow(tokens: List[Token]): IntermediateAST = {
+    val (beginningNode, currTokens) = factor(tokens)
 
     currTokens match {
-      case (AddToken | SubtractToken) :: _ => accumulateExpression(beginningNode, currTokens)
-      case _                               => (beginningNode, currTokens)
+      case PowerToken :: _ => accumulatePow(beginningNode, currTokens)
+      case _               => (beginningNode, currTokens)
     }
   }
 
   @tailrec
-  private def accumulateExpression(currNode: AbstractSyntaxTree, tokens: List[Token]): IntermediateAST = {
-    lazy val (right, currTokens) = term(tokens.tail)
+  private def accumulatePow(currNode: AbstractSyntaxTree, tokens: List[Token]): IntermediateAST = {
+    lazy val (right, currTokens) = factor(tokens.tail)
 
     tokens match {
-      case AddToken :: _      => accumulateExpression(BinaryOperation(currNode, Add, right), currTokens)
-      case SubtractToken :: _ => accumulateExpression(BinaryOperation(currNode, Subtract, right), currTokens)
-      case _                  => (currNode, tokens)
+      case PowerToken :: _ => accumulatePow(BinaryOperation(currNode, Power, right), currTokens)
+      case _               => (currNode, tokens)
     }
+  }
+
+  private def factor(tokens: List[Token]): IntermediateAST = tokens match {
+    case (int: IntegerToken) :: tail    => (Integer(int.value), tail)
+    case (float: FloatToken) :: tail    => (Float(float.value), tail)
+    case (str: StringToken) :: tail     => (ASTString(str.value), tail)
+    case (char: CharacterToken) :: tail => (Character(char.value), tail)
+    case LeftParenthesisToken :: tail   => innerExpression(tail)
+    case AssignToken :: tail            => assignStatement(tail)
+    case token :: _                     => throw new UnexpectedTokenException(token)
+    case Nil                            => throw new Exception("No tokens found")
+  }
+
+  private def innerExpression(tokens: List[Token]): IntermediateAST = {
+    val (node, currTokens) = expression(tokens)
+
+    if (currTokens.head == RightParenthesisToken) (node, currTokens.tail)
+    else throw new NoClosingParenthesisException()
+  }
+
+  private def assignStatement(tokens: List[Token]): IntermediateAST = tokens match {
+    case ConstantToken(name) :: EqualsToken :: (prim: PrimitiveToken) :: tail => (Assignment(name, prim.value), tail)
+    case _                                                                    => throw new UnexpectedTokenException(EqualsToken)
   }
 }
