@@ -6,3 +6,4 @@ class UnexpectedTokenException(token: Token)   extends Exception(s"Unexpected To
 class ExpectedTokenException(token: Token)     extends Exception(s"Expected Token: $token")
 class UnexpectedCharacterException(char: Char) extends Exception(s"Unexpected Character: $char.")
 class CharacterPowerException                  extends Exception(s"Cannot perform exponential operation on Character.")
+class ExpectedExpressionException              extends Exception(s"Expected Expression.")

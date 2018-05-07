@@ -1,7 +1,11 @@
 package com.ndsmith3.parakeet
 
 import com.ndsmith3.parakeet.ast._
-import com.ndsmith3.parakeet.exception.{NoClosingParenthesisException, UnexpectedTokenException}
+import com.ndsmith3.parakeet.exception.{
+  ExpectedExpressionException,
+  NoClosingParenthesisException,
+  UnexpectedTokenException
+}
 import com.ndsmith3.parakeet.lexer._
 
 import scala.annotation.tailrec
@@ -90,7 +94,12 @@ object Parser {
   }
 
   private def assignStatement(tokens: List[Token]): IntermediateAST = tokens match {
-    case ConstantToken(name) :: EqualsToken :: (prim: PrimitiveToken) :: tail => (Assignment(name, prim.value), tail)
-    case _                                                                    => throw new UnexpectedTokenException(EqualsToken)
+    case ConstantToken(name) :: EqualsToken :: tail =>
+      val (assignmentValue, remainingTokens) = expression(tail)
+      assignmentValue match {
+        case primitive: Primitive => (Assignment(name, primitive), remainingTokens)
+        case _                    => throw new ExpectedExpressionException()
+      }
+    case _ => throw new UnexpectedTokenException(EqualsToken)
   }
 }

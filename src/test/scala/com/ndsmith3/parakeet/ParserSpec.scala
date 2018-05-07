@@ -1,8 +1,12 @@
 package com.ndsmith3.parakeet
 
 import com.ndsmith3.parakeet.ast._
+import com.ndsmith3.parakeet.exception.{
+  ExpectedExpressionException,
+  NoClosingParenthesisException,
+  UnexpectedTokenException
+}
 import com.ndsmith3.parakeet.lexer._
-import com.ndsmith3.parakeet.exception.{NoClosingParenthesisException, UnexpectedTokenException}
 import org.scalatest.FlatSpec
 
 class ParserSpec extends FlatSpec {
@@ -45,6 +49,13 @@ class ParserSpec extends FlatSpec {
                                                                                                Integer(2)))
   }
 
+  it should "return Assignment(\"abcdefg\", 2) when given AssignToken :: ConstantToken(\"abcdefg\") :: EqualsToken :: IntegerToken(2) :: Nil" in {
+    assert(
+      Parser.parse(AssignToken :: ConstantToken("abcdefg") :: EqualsToken :: IntegerToken(2) :: Nil) == Assignment(
+        "abcdefg",
+        Integer(2)))
+  }
+
   it should "throw a NoClosingParenthesisException when there is no closing parenthesis" in {
     assertThrows[NoClosingParenthesisException] {
       Parser.parse(LeftParenthesisToken :: IntegerToken(1) :: IntegerToken(2) :: Nil)
@@ -60,6 +71,20 @@ class ParserSpec extends FlatSpec {
   it should "throw an Exception when given Nil" in {
     assertThrows[Exception] {
       Parser.parse(Nil)
+    }
+  }
+
+  it should "throw an UnexpectedTokenException when there is no expression after an assignment" in {
+    assertThrows[UnexpectedTokenException] {
+      Parser.parse(AssignToken :: ConstantToken("abcdefg") :: EqualsToken :: AssignToken :: Nil)
+    }
+  }
+
+  it should "throw an ExpectedExpressionException when user tries to nest assignments" in {
+    assertThrows[ExpectedExpressionException] {
+      Parser.parse(
+        AssignToken :: ConstantToken("abcdefg") :: EqualsToken :: AssignToken :: ConstantToken("abcdef") :: EqualsToken :: IntegerToken(
+          1) :: Nil)
     }
   }
 }

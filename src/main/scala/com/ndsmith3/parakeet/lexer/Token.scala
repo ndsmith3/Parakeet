@@ -7,11 +7,11 @@ case object AssignToken                extends Token
 case object EqualsToken                extends Token
 case class ConstantToken(name: String) extends Token
 
-trait PrimitiveToken {
+trait PrimitiveToken extends Token {
   val value: Any
 }
-case class StringToken(value: String) extends PrimitiveToken
 
+case class StringToken(value: String)  extends PrimitiveToken
 trait NumericToken                     extends PrimitiveToken
 case class IntegerToken(value: Int)    extends NumericToken
 case class FloatToken(value: Double)   extends NumericToken
