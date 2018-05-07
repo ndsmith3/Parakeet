@@ -97,8 +97,9 @@ object Parser {
     case ConstantToken(name) :: EqualsToken :: tail =>
       val (assignmentValue, remainingTokens) = expression(tail)
       assignmentValue match {
-        case primitive: Primitive => (Assignment(name, primitive), remainingTokens)
-        case _                    => throw new ExpectedExpressionException()
+        case primitive: Primitive   => (Assignment(name, primitive), remainingTokens)
+        case binOp: BinaryOperation => (Assignment(name, binOp), remainingTokens)
+        case _                      => throw new ExpectedExpressionException()
       }
     case _ => throw new UnexpectedTokenException(EqualsToken)
   }
