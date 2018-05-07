@@ -13,7 +13,7 @@ object Interpreter {
     visit(AST)
   }
 
-  private def visit(abstractSyntaxTree: AbstractSyntaxTree): Primitive =
+  private def visit(abstractSyntaxTree: AbstractSyntaxTree): AbstractSyntaxTree =
     abstractSyntaxTree match {
       case int: Integer                           => int
       case float: Float                           => float
@@ -22,5 +22,5 @@ object Interpreter {
       case BinaryOperation(left, operator, right) => eval(operator, visit(left), visit(right))
     }
 
-  implicit def primitiveToNumeric(primitive: Primitive): Numeric = primitive.asInstanceOf[Numeric]
+  implicit def astToNumeric(ast: AbstractSyntaxTree): Numeric = ast.asInstanceOf[Numeric]
 }
