@@ -29,7 +29,7 @@ object Lexer {
     case ';'                           => (Some(SemicolonToken), str.tail)
     case 'l' if isAssignStatement(str) => (Some(AssignToken), str.substring(3))
     case '"'                           => parseString(str)
-    case '.'                           => parseFloat(str, "")
+    case '.'                           => parseFloat(str)
     case char if char.isDigit          => parseNumber(str)
     case char if char.isLetter         => parseConstantName(str)
     case char                          => throw new UnexpectedCharacterException(char)
@@ -58,7 +58,7 @@ object Lexer {
   private def isCompleteNumber(str: String): Boolean = str.isEmpty || !str.head.isDigit && str.head != '.'
   private def isFloat(str: String): Boolean          = str.head == '.'
 
-  private def parseFloat(str: String, floatString: String): (Option[FloatToken], String) = {
+  private def parseFloat(str: String, floatString: String = ""): (Option[FloatToken], String) = {
     @tailrec
     def scan(currStr: String, currFloatString: String = floatString): (Option[FloatToken], String) =
       if (isCompleteNumber(currStr)) (Some(FloatToken(currFloatString.toDouble)), currStr)
