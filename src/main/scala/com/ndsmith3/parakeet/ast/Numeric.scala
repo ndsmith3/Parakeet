@@ -4,6 +4,7 @@ import com.ndsmith3.parakeet.exception.CharacterPowerException
 
 trait Numeric extends Primitive {
   val value: AnyVal
+  override val scope: Map[String, Primitive] = null
   def +(that: Numeric): Numeric
   def -(that: Numeric): Numeric
   def *(that: Numeric): Numeric

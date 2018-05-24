@@ -1,6 +1,7 @@
 package com.ndsmith3.parakeet.ast
 
 object Operator extends AbstractSyntaxTree {
+  override val scope: Map[String, Primitive] = null
   def eval(operator: Operator, x: Numeric, y: Numeric): Numeric = operator match {
     case Add      => x + y
     case Subtract => x - y

@@ -71,7 +71,7 @@ object Lexer {
 
   private def parseConstantName(str: String): (Option[ConstantToken], String) = {
     def scan(currStr: String, currNameString: String = ""): (Option[ConstantToken], String) =
-      if (currStr.isEmpty) (Some(ConstantToken(currNameString)), "")
+      if (currStr.isEmpty || currStr.head == ';') (Some(ConstantToken(currNameString)), "")
       else if (currStr.head == ' ') (Some(ConstantToken(currNameString)), currStr.tail)
       else scan(currStr.tail, currNameString + currStr.head)
 
