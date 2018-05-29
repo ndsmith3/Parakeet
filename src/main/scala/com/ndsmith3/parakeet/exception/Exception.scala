@@ -8,3 +8,4 @@ class UnexpectedCharacterException(char: Char)    extends Exception(s"Unexpected
 class CharacterPowerException                     extends Exception(s"Cannot perform exponential operation on Character.")
 class ExpectedExpressionException                 extends Exception(s"Expected Expression.")
 class UnknownTokenException(constantName: String) extends Exception(s"Unknown Token: $constantName")
+class ReassignmentException(constantName: String) extends Exception(s"Cannot rewrite constant: $constantName")

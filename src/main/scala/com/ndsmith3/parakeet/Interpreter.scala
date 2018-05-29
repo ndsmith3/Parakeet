@@ -2,7 +2,7 @@ package com.ndsmith3.parakeet
 
 import com.ndsmith3.parakeet.ast._
 import com.ndsmith3.parakeet.ast.Operator.eval
-import com.ndsmith3.parakeet.exception.UnknownTokenException
+import com.ndsmith3.parakeet.exception.{ReassignmentException, UnknownTokenException}
 import com.ndsmith3.parakeet.lexer.{Lexer, Token}
 
 import scala.language.implicitConversions
@@ -34,9 +34,10 @@ object Interpreter {
   private def execute(compoundStatement: CompoundStatement): AbstractSyntaxTree =
     compoundStatement.statements.foldLeft(compoundStatement.statements.head) { (currAST, currStatement) =>
       currStatement match {
-        case Assignment(name, value)                => IntermediateAbstractSyntaxTree(currAST.scope + (name -> visit(value)))
-        case ID(_)                                  => visit(currStatement, currAST)
-        case BinaryOperation(left, operator, right) => eval(operator, visit(left, currAST), visit(right, currAST))
+        case Assignment(name, _) if currAST.scope contains name => throw new ReassignmentException(name)
+        case Assignment(name, value)                            => IntermediateAbstractSyntaxTree(currAST.scope + (name -> visit(value)))
+        case ID(_)                                              => visit(currStatement, currAST)
+        case BinaryOperation(left, operator, right)             => eval(operator, visit(left, currAST), visit(right, currAST))
       }
     }
 
