@@ -16,25 +16,28 @@ object Interpreter {
 
   private def visit(abstractSyntaxTree: AbstractSyntaxTree, currAST: AbstractSyntaxTree = EOF): AbstractSyntaxTree =
     abstractSyntaxTree match {
-      case int: Integer    => int
-      case float: Float    => float
-      case char: Character => char
-      case str: ASTString  => str
-      case ID(constantName) =>
-        currAST.scope.get(constantName) match {
-          case Some(primitive) => primitive
-          case None            => throw new UnknownTokenException(constantName)
-        }
+      case int: Integer                           => int
+      case float: Float                           => float
+      case char: Character                        => char
+      case str: ASTString                         => str
+      case ID(constantName)                       => getConstant(constantName, currAST)
       case BinaryOperation(left, operator, right) => eval(operator, visit(left), visit(right))
-      case compoundStatement: CompoundStatement =>
-        compoundStatement.statements.foldLeft(compoundStatement.statements.head) { (currAST, currStatement) =>
-          currStatement match {
-            case Assignment(constantName, value) =>
-              IntermediateAbstractSyntaxTree(currAST.scope + (constantName -> visit(value)))
-            case ID(_)                                  => visit(currStatement, currAST)
-            case BinaryOperation(left, operator, right) => eval(operator, visit(left, currAST), visit(right, currAST))
-          }
-        }
+      case compoundStatement: CompoundStatement   => execute(compoundStatement)
+    }
+
+  private def getConstant(constantName: String, currAST: AbstractSyntaxTree): AbstractSyntaxTree =
+    currAST.scope.get(constantName) match {
+      case Some(primitive) => primitive
+      case None            => throw new UnknownTokenException(constantName)
+    }
+
+  private def execute(compoundStatement: CompoundStatement): AbstractSyntaxTree =
+    compoundStatement.statements.foldLeft(compoundStatement.statements.head) { (currAST, currStatement) =>
+      currStatement match {
+        case Assignment(name, value)                => IntermediateAbstractSyntaxTree(currAST.scope + (name -> visit(value)))
+        case ID(_)                                  => visit(currStatement, currAST)
+        case BinaryOperation(left, operator, right) => eval(operator, visit(left, currAST), visit(right, currAST))
+      }
     }
 
   implicit def astToNumeric(ast: AbstractSyntaxTree): Numeric = ast.asInstanceOf[Numeric]
