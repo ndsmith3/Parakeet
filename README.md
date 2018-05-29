@@ -10,7 +10,8 @@ A statically typed, lazily evaluated functional programming language.
     * ~~Exponent operator~~
 * ~~Primitive String Evalution~~
 * ~~Start test suite for unit testing previously completed work~~
-* Primitive Type Storage
+* ~~Primitive Type Storage~~
+* REPL storage between commands
 * Type Declaration
 * Type Restriction
 * Entrypoint definition
