@@ -14,9 +14,8 @@ object Parser {
   type IntermediateAST     = (AbstractSyntaxTree, List[Token])
   type AbstractSyntaxTrees = List[AbstractSyntaxTree]
 
-  def parse(tokens: List[Token]): AbstractSyntaxTree = compoundExpression(tokens)
-  private def compoundExpression(tokens: List[Token]): AbstractSyntaxTree =
-    CompoundStatement(statementList(tokens))
+  def parse(tokens: List[Token]): AbstractSyntaxTree                      = compoundExpression(tokens)
+  private def compoundExpression(tokens: List[Token]): AbstractSyntaxTree = CompoundStatement(statementList(tokens))
 
   private def statementList(tokens: List[Token]): AbstractSyntaxTrees = {
     def accumulateStatements(currTokens: List[Token], statements: AbstractSyntaxTrees): AbstractSyntaxTrees = {
@@ -41,11 +40,13 @@ object Parser {
   private def assignStatement(tokens: List[Token]): IntermediateAST = tokens match {
     case ConstantToken(name) :: EqualsToken :: tail =>
       val (assignmentValue, remainingTokens) = expression(tail)
+
       assignmentValue match {
         case primitive: Primitive   => (Assignment(name, primitive), remainingTokens)
         case binOp: BinaryOperation => (Assignment(name, binOp), remainingTokens)
         case _                      => throw new ExpectedExpressionException()
       }
+
     case _ => throw new UnexpectedTokenException(EqualsToken)
   }
 
