@@ -11,55 +11,49 @@ import org.scalatest.FlatSpec
 
 class ParserSpec extends FlatSpec {
   "The Parser" should "return Integer(1) when given IntegerToken(1) :: Nil" in {
-    assert(Parser.parse(IntegerToken(1) :: Nil) == Integer(1))
+    assert(Parser.parse(IntegerToken(1) :: Nil) == CompoundStatement(List(Integer(1))))
   }
 
   it should "return Float(2.2) when given FloatToken(2.2) :: Nil" in {
-    assert(Parser.parse(FloatToken(2.2) :: Nil) == Float(2.2))
+    assert(Parser.parse(FloatToken(2.2) :: Nil) == CompoundStatement(List(Float(2.2))))
   }
 
   it should "return Character('a') when given CharacterToken('a') :: Nil" in {
-    assert(Parser.parse(CharacterToken('a') :: Nil) == Character('a'))
+    assert(Parser.parse(CharacterToken('a') :: Nil) == CompoundStatement(List(Character('a'))))
   }
 
   it should "return ASTString(\"abcdefg\") when given StringToken(\"abcdefg\") :: Nil" in {
-    assert(Parser.parse(StringToken("abcdefg") :: Nil) == ASTString("abcdefg"))
+    assert(Parser.parse(StringToken("abcdefg") :: Nil) == CompoundStatement(List(ASTString("abcdefg"))))
   }
 
   it should "return BinaryOperation(Integer(1), Subtract, Integer(1)) when given IntegerToken(1) :: SubtractToken :: IntegerToken(1) :: Nil" in {
     assert(
       Parser
-        .parse(IntegerToken(1) :: SubtractToken :: IntegerToken(1) :: Nil) == BinaryOperation(Integer(1),
+        .parse(IntegerToken(1) :: SubtractToken :: IntegerToken(1) :: Nil) == CompoundStatement(List(BinaryOperation(Integer(1),
                                                                                               Subtract,
-                                                                                              Integer(1))
+                                                                                              Integer(1))))
     )
   }
 
   it should "return BinaryOperation(Float(1), Modulus, Float(1)) when given FloatToken(1) :: ModulusToken :: FloatToken(1) :: Nil" in {
     assert(
       Parser
-        .parse(FloatToken(1) :: ModulusToken :: FloatToken(1) :: Nil) == BinaryOperation(Float(1), Modulus, Float(1))
+        .parse(FloatToken(1) :: ModulusToken :: FloatToken(1) :: Nil) == CompoundStatement(List(BinaryOperation(Float(1), Modulus, Float(1))))
     )
   }
 
   it should "return BinaryOperation(Integer(2), Power, Integer(2)) when given IntegerToken(2) :: PowerToken :: IntegerToken(2) :: Nil" in {
     assert(
-      Parser.parse(IntegerToken(2) :: PowerToken :: IntegerToken(2) :: Nil) == BinaryOperation(Integer(2),
+      Parser.parse(IntegerToken(2) :: PowerToken :: IntegerToken(2) :: Nil) == CompoundStatement(List(BinaryOperation(Integer(2),
                                                                                                Power,
-                                                                                               Integer(2)))
+                                                                                               Integer(2)))))
   }
 
   it should "return Assignment(\"abcdefg\", 2) when given AssignToken :: ConstantToken(\"abcdefg\") :: EqualsToken :: IntegerToken(2) :: Nil" in {
     assert(
-      Parser.parse(AssignToken :: ConstantToken("abcdefg") :: EqualsToken :: IntegerToken(2) :: Nil) == Assignment(
+      Parser.parse(AssignToken :: ConstantToken("abcdefg") :: EqualsToken :: IntegerToken(2) :: Nil) == CompoundStatement(List(Assignment(
         "abcdefg",
-        Integer(2)))
-  }
-
-  it should "throw a NoClosingParenthesisException when there is no closing parenthesis" in {
-    assertThrows[NoClosingParenthesisException] {
-      Parser.parse(LeftParenthesisToken :: IntegerToken(1) :: IntegerToken(2) :: Nil)
-    }
+        Integer(2)))))
   }
 
   it should "throw an UnexpectedTokenException when given a closing parenthesis without an opening parenthesis first" in {

@@ -4,7 +4,8 @@ import com.ndsmith3.parakeet.ast._
 import com.ndsmith3.parakeet.exception.{
   ExpectedExpressionException,
   NoClosingParenthesisException,
-  UnexpectedTokenException
+  UnexpectedTokenException,
+  ExpectedTokenException
 }
 import com.ndsmith3.parakeet.lexer._
 
@@ -14,8 +15,8 @@ object Parser {
   type IntermediateAST     = (AbstractSyntaxTree, List[Token])
   type AbstractSyntaxTrees = List[AbstractSyntaxTree]
 
-  def parse(tokens: List[Token]): AbstractSyntaxTree                      = compoundExpression(tokens)
-  private def compoundExpression(tokens: List[Token]): AbstractSyntaxTree = CompoundStatement(statementList(tokens))
+  def parse(tokens: List[Token]): CompoundStatement                      = compoundExpression(tokens)
+  private def compoundExpression(tokens: List[Token]): CompoundStatement = CompoundStatement(statementList(tokens))
 
   private def statementList(tokens: List[Token]): AbstractSyntaxTrees = {
     def accumulateStatements(currTokens: List[Token], statements: AbstractSyntaxTrees): AbstractSyntaxTrees = {
@@ -24,6 +25,7 @@ object Parser {
       nextTokens match {
         case (SemicolonToken :: Nil) | Nil => nextStatements
         case SemicolonToken :: tail        => accumulateStatements(tail, nextStatements)
+        case _                             => throw new ExpectedTokenException(SemicolonToken)
       }
     }
 
@@ -34,7 +36,9 @@ object Parser {
     case _ :: (_: BinaryOperationToken) :: _ => expression(tokens)
     case AssignToken :: tail                 => assignStatement(tail)
     case ConstantToken(name) :: tail         => (ID(name), tail)
+    case (_: PrimitiveToken) :: tail         => factor(tokens)
     case unexpectedToken :: _                => throw new UnexpectedTokenException(unexpectedToken)
+    case Nil                                 => throw new ExpectedTokenException(SemicolonToken)
   }
 
   private def assignStatement(tokens: List[Token]): IntermediateAST = tokens match {

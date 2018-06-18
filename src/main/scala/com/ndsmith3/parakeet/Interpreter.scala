@@ -38,6 +38,7 @@ object Interpreter {
         case Assignment(name, value)                            => IntermediateAbstractSyntaxTree(currAST.scope + (name -> visit(value)))
         case ID(_)                                              => visit(currStatement, currAST)
         case BinaryOperation(left, operator, right)             => eval(operator, visit(left, currAST), visit(right, currAST))
+        case ast                                                => visit(ast)
       }
     }
 
