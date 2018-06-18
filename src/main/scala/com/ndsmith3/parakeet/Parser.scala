@@ -41,18 +41,19 @@ object Parser {
     case Nil                                 => throw new ExpectedTokenException(SemicolonToken)
   }
 
-  private def assignStatement(tokens: List[Token]): IntermediateAST = tokens match {
-    case ConstantToken(name) :: EqualsToken :: tail =>
-      val (assignmentValue, remainingTokens) = expression(tail)
+  private def assignStatement(tokens: List[Token]): IntermediateAST =
+    tokens match {
+      case ConstantToken(name) :: EqualsToken :: tail =>
+        val (assignmentValue, remainingTokens) = expression(tail)
 
-      assignmentValue match {
-        case primitive: Primitive   => (Assignment(name, primitive), remainingTokens)
-        case binOp: BinaryOperation => (Assignment(name, binOp), remainingTokens)
-        case _                      => throw new ExpectedExpressionException()
-      }
+        assignmentValue match {
+          case primitive: Primitive   => (Assignment(name, primitive), remainingTokens)
+          case binOp: BinaryOperation => (Assignment(name, binOp), remainingTokens)
+          case _                      => throw new ExpectedExpressionException()
+        }
 
-    case _ => throw new UnexpectedTokenException(EqualsToken)
-  }
+      case _ => throw new UnexpectedTokenException(EqualsToken)
+    }
 
   private def expression(tokens: List[Token]): IntermediateAST = {
     val (beginningNode, currTokens) = term(tokens)

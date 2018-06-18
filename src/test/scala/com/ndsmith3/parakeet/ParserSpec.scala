@@ -29,31 +29,30 @@ class ParserSpec extends FlatSpec {
   it should "return BinaryOperation(Integer(1), Subtract, Integer(1)) when given IntegerToken(1) :: SubtractToken :: IntegerToken(1) :: Nil" in {
     assert(
       Parser
-        .parse(IntegerToken(1) :: SubtractToken :: IntegerToken(1) :: Nil) == CompoundStatement(List(BinaryOperation(Integer(1),
-                                                                                              Subtract,
-                                                                                              Integer(1))))
+        .parse(IntegerToken(1) :: SubtractToken :: IntegerToken(1) :: Nil) == CompoundStatement(
+        List(BinaryOperation(Integer(1), Subtract, Integer(1))))
     )
   }
 
   it should "return BinaryOperation(Float(1), Modulus, Float(1)) when given FloatToken(1) :: ModulusToken :: FloatToken(1) :: Nil" in {
     assert(
       Parser
-        .parse(FloatToken(1) :: ModulusToken :: FloatToken(1) :: Nil) == CompoundStatement(List(BinaryOperation(Float(1), Modulus, Float(1))))
+        .parse(FloatToken(1) :: ModulusToken :: FloatToken(1) :: Nil) == CompoundStatement(
+        List(BinaryOperation(Float(1), Modulus, Float(1))))
     )
   }
 
   it should "return BinaryOperation(Integer(2), Power, Integer(2)) when given IntegerToken(2) :: PowerToken :: IntegerToken(2) :: Nil" in {
     assert(
-      Parser.parse(IntegerToken(2) :: PowerToken :: IntegerToken(2) :: Nil) == CompoundStatement(List(BinaryOperation(Integer(2),
-                                                                                               Power,
-                                                                                               Integer(2)))))
+      Parser.parse(IntegerToken(2) :: PowerToken :: IntegerToken(2) :: Nil) == CompoundStatement(
+        List(BinaryOperation(Integer(2), Power, Integer(2)))))
   }
 
   it should "return Assignment(\"abcdefg\", 2) when given AssignToken :: ConstantToken(\"abcdefg\") :: EqualsToken :: IntegerToken(2) :: Nil" in {
     assert(
-      Parser.parse(AssignToken :: ConstantToken("abcdefg") :: EqualsToken :: IntegerToken(2) :: Nil) == CompoundStatement(List(Assignment(
-        "abcdefg",
-        Integer(2)))))
+      Parser
+        .parse(AssignToken :: ConstantToken("abcdefg") :: EqualsToken :: IntegerToken(2) :: Nil) == CompoundStatement(
+        List(Assignment("abcdefg", Integer(2)))))
   }
 
   it should "throw an UnexpectedTokenException when given a closing parenthesis without an opening parenthesis first" in {

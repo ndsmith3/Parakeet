@@ -9,7 +9,8 @@ object Lexer {
     @tailrec
     def tokenizeInput(currString: String, currTokens: List[Option[Token]] = Nil): List[Token] = {
       lazy val (token, newString) = getToken(currString)
-      if (currString.isEmpty) currTokens.flatten else tokenizeInput(newString, currTokens :+ token)
+      if (currString.isEmpty) currTokens.flatten
+      else tokenizeInput(newString, currTokens :+ token)
     }
 
     tokenizeInput(input)
@@ -36,10 +37,11 @@ object Lexer {
   }
 
   private def parseString(str: String): (Option[StringToken], String) = {
-    def scan(currStr: String, currStringValue: String = ""): (Option[StringToken], String) = currStr.head match {
-      case '"'  => (Some(StringToken(currStringValue)), currStr.tail)
-      case char => scan(currStr.tail, currStringValue + char)
-    }
+    def scan(currStr: String, currStringValue: String = ""): (Option[StringToken], String) =
+      currStr.head match {
+        case '"'  => (Some(StringToken(currStringValue)), currStr.tail)
+        case char => scan(currStr.tail, currStringValue + char)
+      }
 
     // Scan on tail to avoid the first quotation mark
     scan(str.tail)

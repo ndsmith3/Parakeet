@@ -42,5 +42,6 @@ object Interpreter {
       }
     }
 
-  implicit def astToNumeric(ast: AbstractSyntaxTree): Numeric = ast.asInstanceOf[Numeric]
+  implicit def astToNumeric(ast: AbstractSyntaxTree): Numeric =
+    ast.asInstanceOf[Numeric]
 }
