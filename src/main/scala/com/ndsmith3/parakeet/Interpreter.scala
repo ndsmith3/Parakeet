@@ -11,19 +11,20 @@ object Interpreter {
   type InterpreterState = (AbstractSyntaxTree, Map[String, Primitive])
 
   def interpret(input: String, scope: Map[String, Primitive] = Map()): InterpreterState = {
-    val tokens: List[Token]     = Lexer.tokenize(input)
+    val tokens: List[Token]                  = Lexer.tokenize(input)
     val compoundStatement: CompoundStatement = Parser.parse(tokens)
     execute(compoundStatement, scope)
   }
 
   private def visit(abstractSyntaxTree: AbstractSyntaxTree, scope: Map[String, Primitive] = Map()): InterpreterState =
     abstractSyntaxTree match {
-      case int: Integer                           => (int, scope)
-      case float: Float                           => (float, scope)
-      case char: Character                        => (char, scope)
-      case str: ASTString                         => (str, scope)
-      case ID(constantName)                       => (getConstant(constantName, scope), scope)
-      case BinaryOperation(left, operator, right) => (eval(operator, visit(left, scope)._1, visit(right, scope)._1), scope)
+      case int: Integer     => (int, scope)
+      case float: Float     => (float, scope)
+      case char: Character  => (char, scope)
+      case str: ASTString   => (str, scope)
+      case ID(constantName) => (getConstant(constantName, scope), scope)
+      case BinaryOperation(left, operator, right) =>
+        (eval(operator, visit(left, scope)._1, visit(right, scope)._1), scope)
     }
 
   private def getConstant(constantName: String, scope: Map[String, Primitive]): AbstractSyntaxTree =
@@ -47,8 +48,9 @@ object Interpreter {
         case Assignment(name, _) if scope contains name => throw new ReassignmentException(name)
         case Assignment(name, value)                    => (statement, scope + (name -> visit(value, scope)._1))
         case ID(_)                                      => (visit(statement, scope)._1, scope)
-        case BinaryOperation(left, operator, right)     => (eval(operator, visit(left, scope)._1, visit(right, scope)._1), scope)
-        case ast                                        => (visit(ast, scope)._1, scope)
+        case BinaryOperation(left, operator, right) =>
+          (eval(operator, visit(left, scope)._1, visit(right, scope)._1), scope)
+        case ast => (visit(ast, scope)._1, scope)
       }
 
     traverse(compoundStatement.statements, scope)
