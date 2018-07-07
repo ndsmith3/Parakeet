@@ -21,7 +21,7 @@ Parakeet is currently only usable as a REPL application.
 ### Other Commands
 
  * `scalafmt`: Scala formatter for the project
-  * Formats source files in the style outlined in the project's `.scalafmt.conf` file
+    * Formats source files in the style outlined in the project's `.scalafmt.conf` file
 
 ### Application Commands
 
