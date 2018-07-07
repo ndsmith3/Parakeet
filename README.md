@@ -12,7 +12,7 @@ A statically typed, lazily evaluated functional programming language.
 * ~~Start test suite for unit testing previously completed work~~
 * ~~Primitive Type Storage~~
 * ~~REPL storage between commands~~
-* Error handling for Parsing and Runtime
+* ~~Error handling for Parsing and Runtime~~
 * Type Declaration
 * Type Restriction
 * Entrypoint definition
@@ -21,4 +21,5 @@ A statically typed, lazily evaluated functional programming language.
 * Lazy Evaluation
 * Custom Data Type Storage
 * Pattern Matching
+* Robust Stacktraces for Error Handling
 * Type Inference
