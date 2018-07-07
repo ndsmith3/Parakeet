@@ -14,14 +14,15 @@ object Interpreter {
     visit(AST)
   }
 
-  private def visit(abstractSyntaxTree: AbstractSyntaxTree, scope: Map[String, Primitive] = Map()): AbstractSyntaxTree =
+  private def visit(abstractSyntaxTree: AbstractSyntaxTree,
+                    scope: Map[String, Primitive] = Map()): AbstractSyntaxTree =
     abstractSyntaxTree match {
       case int: Integer                           => int
       case float: Float                           => float
       case char: Character                        => char
       case str: ASTString                         => str
       case ID(constantName)                       => getConstant(constantName, scope)
-      case BinaryOperation(left, operator, right) => eval(operator, visit(left), visit(right))
+      case BinaryOperation(left, operator, right) => eval(operator, visit(left, scope), visit(right, scope))
       case compoundStatement: CompoundStatement   => execute(compoundStatement)
     }
 
@@ -33,22 +34,23 @@ object Interpreter {
 
   private def execute(compoundStatement: CompoundStatement): AbstractSyntaxTree = {
     def traverse(statements: List[AbstractSyntaxTree], scope: Map[String, Primitive] = Map()): AbstractSyntaxTree =
-      if (statements.size == 1) evalStatement(statements.head, scope)._1
-      else {
-        val (_, newScope) = evalStatement(statements.head, scope)
-        traverse(statements.tail, newScope)
+      statements match {
+        case Nil              => throw new Exception("Passed Nil")
+        case statement :: Nil => evalStatement(statement, scope)._1
+        case statement :: tail =>
+          val (_, newScope) = evalStatement(statement, scope)
+          traverse(tail, newScope)
       }
 
     def evalStatement(statement: AbstractSyntaxTree,
-                      scope: Map[String, Primitive]):
-                      (AbstractSyntaxTree, Map[String, Primitive]) =
-    statement match {
-      case Assignment(name, _) if scope contains name => throw new ReassignmentException(name)
-      case Assignment(name, value)                    => (statement, scope + (name -> visit(value)))
-      case ID(_)                                      => (visit(statement, scope), scope)
-      case BinaryOperation(left, operator, right)     => (eval(operator, visit(left, scope), visit(right, scope)), scope)
-      case ast                                        => (visit(ast, scope), scope)
-    }
+                      scope: Map[String, Primitive]): (AbstractSyntaxTree, Map[String, Primitive]) =
+      statement match {
+        case Assignment(name, _) if scope contains name => throw new ReassignmentException(name)
+        case Assignment(name, value)                    => (statement, scope + (name -> visit(value, scope)))
+        case ID(_)                                      => (visit(statement, scope), scope)
+        case BinaryOperation(left, operator, right)     => (eval(operator, visit(left, scope), visit(right, scope)), scope)
+        case ast                                        => (visit(ast, scope), scope)
+      }
 
     traverse(compoundStatement.statements)
   }
