@@ -41,11 +41,12 @@ This section assumes you have a built version of Parakeet with the binary name `
 * ~~REPL storage between commands~~
 * ~~Error handling for Parsing and Runtime~~
 * Source files
+* Function Declaration
 * Type Declaration
 * Type Restriction
-* Entrypoint definition
 * Algebraic Data Type evalution
 * String Data Type
+* Entrypoint definition
 * Lazy Evaluation
 * Custom Data Type Storage
 * Pattern Matching
