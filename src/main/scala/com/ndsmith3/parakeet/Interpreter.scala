@@ -14,34 +14,44 @@ object Interpreter {
     visit(AST)
   }
 
-  private def visit(abstractSyntaxTree: AbstractSyntaxTree, currAST: AbstractSyntaxTree = EOF): AbstractSyntaxTree =
+  private def visit(abstractSyntaxTree: AbstractSyntaxTree, scope: Map[String, Primitive] = Map()): AbstractSyntaxTree =
     abstractSyntaxTree match {
       case int: Integer                           => int
       case float: Float                           => float
       case char: Character                        => char
       case str: ASTString                         => str
-      case ID(constantName)                       => getConstant(constantName, currAST)
+      case ID(constantName)                       => getConstant(constantName, scope)
       case BinaryOperation(left, operator, right) => eval(operator, visit(left), visit(right))
       case compoundStatement: CompoundStatement   => execute(compoundStatement)
     }
 
-  private def getConstant(constantName: String, currAST: AbstractSyntaxTree): AbstractSyntaxTree =
-    currAST.scope.get(constantName) match {
+  private def getConstant(constantName: String, scope: Map[String, Primitive]): AbstractSyntaxTree =
+    scope.get(constantName) match {
       case Some(primitive) => primitive
       case None            => throw new UnknownTokenException(constantName)
     }
 
-  private def execute(compoundStatement: CompoundStatement): AbstractSyntaxTree =
-    compoundStatement.statements.foldLeft(compoundStatement.statements.head) { (currAST, currStatement) =>
-      currStatement match {
-        case Assignment(name, _) if currAST.scope contains name => throw new ReassignmentException(name)
-        case Assignment(name, value)                            => IntermediateAbstractSyntaxTree(currAST.scope + (name -> visit(value)))
-        case ID(_)                                              => visit(currStatement, currAST)
-        case BinaryOperation(left, operator, right)             => eval(operator, visit(left, currAST), visit(right, currAST))
-        case ast                                                => visit(ast)
+  private def execute(compoundStatement: CompoundStatement): AbstractSyntaxTree = {
+    def traverse(statements: List[AbstractSyntaxTree], scope: Map[String, Primitive] = Map()): AbstractSyntaxTree =
+      if (statements.size == 1) evalStatement(statements.head, scope)._1
+      else {
+        val (_, newScope) = evalStatement(statements.head, scope)
+        traverse(statements.tail, newScope)
       }
+
+    def evalStatement(statement: AbstractSyntaxTree,
+                      scope: Map[String, Primitive]):
+                      (AbstractSyntaxTree, Map[String, Primitive]) =
+    statement match {
+      case Assignment(name, _) if scope contains name => throw new ReassignmentException(name)
+      case Assignment(name, value)                    => (statement, scope + (name -> visit(value)))
+      case ID(_)                                      => (visit(statement, scope), scope)
+      case BinaryOperation(left, operator, right)     => (eval(operator, visit(left, scope), visit(right, scope)), scope)
+      case ast                                        => (visit(ast, scope), scope)
     }
 
-  implicit def astToNumeric(ast: AbstractSyntaxTree): Numeric =
-    ast.asInstanceOf[Numeric]
+    traverse(compoundStatement.statements)
+  }
+
+  implicit def astToNumeric(ast: AbstractSyntaxTree): Numeric = ast.asInstanceOf[Numeric]
 }
