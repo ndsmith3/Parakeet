@@ -13,6 +13,8 @@ If there is a potential feature to be added to Parakeet, complete the following 
   * Ensure that the `.scalafmt.conf` found in the project's root directory is being used
  * Update CHANGELOG.md with a 'release note' style log
  * Create pull request against `master`
+  * Explain the reasoning behind the feature addition in the PR
+  * Any code maintainer has the right to deny this PR for the main Parakeet project
 
 Your pull request will be reviewed by a code maintainer (currently only @ndsmith3). Failure to complete **any** of the steps will result in a denial until the issue has been corrected by the feature creator.
 
@@ -28,5 +30,6 @@ If you find a bug in Parakeet, please report it as an issue. If you would like t
   * Ensure that the `.scalafmt.conf` found in the project's root directory is being used
  * Update CHANGELOG.md with a 'release note' style log
  * Create pull request against `master`
+  * Be sure to explain which issue has been fixed in the PR
 
 Your pull request will be reviewed by a code maintainer (currently only @ndsmith3). Failure to complete **any** of the steps will result in a denial until the issue has been corrected by the bug fixer. The bug fixer doesn't need to worry about the logged issue, as it will be handled by the code maintainers.
