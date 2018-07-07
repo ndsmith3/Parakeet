@@ -1,11 +1,14 @@
 package com.ndsmith3.parakeet.exception
 
 import com.ndsmith3.parakeet.lexer.Token
-class NoClosingParenthesisException()             extends Exception("Expected Closing Parenthesis.")
-class UnexpectedTokenException(token: Token)      extends Exception(s"Unexpected Token: $token.")
-class ExpectedTokenException(token: Token)        extends Exception(s"Expected Token: $token")
-class UnexpectedCharacterException(char: Char)    extends Exception(s"Unexpected Character: $char.")
-class CharacterPowerException                     extends Exception(s"Cannot perform exponential operation on Character.")
-class ExpectedExpressionException                 extends Exception(s"Expected Expression.")
-class UnknownTokenException(constantName: String) extends Exception(s"Unknown Token: $constantName")
-class ReassignmentException(constantName: String) extends Exception(s"Cannot rewrite constant: $constantName")
+
+class ParakeetException(val message: String) extends Throwable
+
+class NoClosingParenthesisException()             extends ParakeetException("Expected Closing Parenthesis.")
+class UnexpectedTokenException(token: Token)      extends ParakeetException(s"Unexpected Token: $token.")
+class ExpectedTokenException(token: Token)        extends ParakeetException(s"Expected Token: $token")
+class UnexpectedCharacterException(char: Char)    extends ParakeetException(s"Unexpected Character: $char.")
+class CharacterPowerException                     extends ParakeetException(s"Cannot perform exponential operation on Character.")
+class ExpectedExpressionException                 extends ParakeetException(s"Expected Expression.")
+class UnknownTokenException(constantName: String) extends ParakeetException(s"Unknown Token: $constantName")
+class ReassignmentException(constantName: String) extends ParakeetException(s"Cannot rewrite constant: $constantName")

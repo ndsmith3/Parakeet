@@ -36,8 +36,7 @@ object Parser {
     case _ :: (_: BinaryOperationToken) :: _ => expression(tokens)
     case AssignToken :: tail                 => assignStatement(tail)
     case ConstantToken(name) :: tail         => (ID(name), tail)
-    case (_: PrimitiveToken) :: tail         => factor(tokens)
-    case unexpectedToken :: _                => throw new UnexpectedTokenException(unexpectedToken)
+    case _ :: tail         => factor(tokens)
     case Nil                                 => throw new ExpectedTokenException(SemicolonToken)
   }
 
@@ -130,7 +129,9 @@ object Parser {
   private def innerExpression(tokens: List[Token]): IntermediateAST = {
     val (node, currTokens) = expression(tokens)
 
-    if (currTokens.head == RightParenthesisToken) (node, currTokens.tail)
-    else throw new NoClosingParenthesisException()
+    currTokens match {
+      case RightParenthesisToken :: tail => (node, tail)
+      case _ => throw new NoClosingParenthesisException()
+    }
   }
 }

@@ -1,6 +1,8 @@
 package com.ndsmith3.parakeet
 
 import com.ndsmith3.parakeet.ast.{ASTString, Float, Integer}
+import com.ndsmith3.parakeet.exception.ExpectedTokenException
+
 import org.scalatest.FlatSpec
 
 class InterpreterSpec extends FlatSpec {
@@ -25,7 +27,7 @@ class InterpreterSpec extends FlatSpec {
   }
 
   it should "throw an Exception when given the input \"\"" in {
-    assertThrows[Exception] {
+    assertThrows[ExpectedTokenException] {
       Interpreter.interpret("")
     }
   }

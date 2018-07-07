@@ -1,5 +1,7 @@
 package com.ndsmith3.parakeet.ast
 
+import com.ndsmith3.parakeet.exception.CharacterPowerException
+
 import org.scalatest.FlatSpec
 
 class NumericSpec extends FlatSpec {
@@ -78,7 +80,7 @@ class NumericSpec extends FlatSpec {
   }
 
   it should "throw an error when taken to the power of a Character" in {
-    assertThrows[Exception] {
+    assertThrows[CharacterPowerException] {
       Integer(1) ^ Character(1)
     }
   }
@@ -152,7 +154,7 @@ class NumericSpec extends FlatSpec {
   }
 
   it should "throw an error when taken to the power of a Character" in {
-    assertThrows[Exception] {
+    assertThrows[CharacterPowerException] {
       Float(1) ^ Character(1)
     }
   }
@@ -218,7 +220,7 @@ class NumericSpec extends FlatSpec {
   }
 
   it should "throw an error when taken to the power of any Numeric type" in {
-    assertThrows[Exception] {
+    assertThrows[CharacterPowerException] {
       Character(1) ^ Integer(1)
     }
   }

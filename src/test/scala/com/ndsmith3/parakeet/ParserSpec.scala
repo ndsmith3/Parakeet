@@ -2,6 +2,7 @@ package com.ndsmith3.parakeet
 
 import com.ndsmith3.parakeet.ast._
 import com.ndsmith3.parakeet.exception.{
+  ExpectedTokenException,
   ExpectedExpressionException,
   NoClosingParenthesisException,
   UnexpectedTokenException
@@ -62,7 +63,7 @@ class ParserSpec extends FlatSpec {
   }
 
   it should "throw an Exception when given Nil" in {
-    assertThrows[Exception] {
+    assertThrows[ExpectedTokenException] {
       Parser.parse(Nil)
     }
   }
