@@ -56,6 +56,6 @@ object Interpreter {
     traverse(compoundStatement.statements, scope)
   }
 
-  implicit def astToNumeric(ast: AbstractSyntaxTree): Numeric = ast.asInstanceOf[Numeric]
+  implicit def astToNumeric(ast: AbstractSyntaxTree): Numeric     = ast.asInstanceOf[Numeric]
   implicit def astToPrimitive(ast: AbstractSyntaxTree): Primitive = ast.asInstanceOf[Primitive]
 }

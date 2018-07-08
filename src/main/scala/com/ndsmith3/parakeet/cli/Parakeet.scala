@@ -16,29 +16,23 @@ object Parakeet extends App {
 
   def repl: Unit = {
     var scope: Map[String, Primitive] = Map()
-
     while (true) {
       readLine("parakeet> ") match {
         case "exit" | null => sys.exit(0)
-        case expression =>
-          Try(Interpreter.interpret(expression, scope)) match {
-            case Success((ast, newScope)) =>
-              scope = newScope
-              println(ast)
-            case Failure(exception) =>
-              throw exception
-              println(ExceptionTranscriber.transcribe(exception.asInstanceOf[ParakeetException]))
-          }
+        case source        => scope = runSource(source, scope)
       }
     }
   }
 
-  def runFile(filePath: String): Unit = {
-    val source: String = Source.fromFile(filePath).getLines.mkString
+  def runFile(filePath: String): Unit = runSource(Source.fromFile(filePath).getLines.mkString("\n"))
 
-    Try(Interpreter.interpret(source)) match {
-      case Success((ast, _))  => println(ast)
-      case Failure(exception) => println(ExceptionTranscriber.transcribe(exception.asInstanceOf[ParakeetException]))
+  def runSource(sourceString: String, scope: Map[String, Primitive] = Map()): Map[String, Primitive] =
+    Try(Interpreter.interpret(sourceString, scope)) match {
+      case Success((ast, newScope)) =>
+        println(ast)
+        newScope
+      case Failure(exception) =>
+        println(ExceptionTranscriber.transcribe(exception.asInstanceOf[ParakeetException]))
+        scope
     }
-  }
 }

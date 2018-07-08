@@ -7,8 +7,8 @@ import scala.annotation.tailrec
 object Lexer {
   def tokenize(input: String): List[Token] = {
     @tailrec
-    def tokenizeInput(currString: String, currTokens: List[Option[Token]] = Nil): List[Token] = {
-      lazy val (token, newString) = getToken(currString)
+    def tokenizeInput(currString: String, currTokens: List[Option[Token]] = None :: Nil): List[Token] = {
+      lazy val (token, newString) = getToken(currString, currTokens.last)
       if (currString.isEmpty) currTokens.flatten
       else tokenizeInput(newString, currTokens :+ token)
     }
@@ -16,7 +16,7 @@ object Lexer {
     tokenizeInput(input)
   }
 
-  private def getToken(str: String): (Option[Token], String) = str.head match {
+  private def getToken(str: String, lastToken: Option[Token]): (Option[Token], String) = str.head match {
     case ' '                           => (None, str.tail)
     case '+'                           => (Some(AddToken), str.tail)
     case '-'                           => (Some(SubtractToken), str.tail)
@@ -27,7 +27,9 @@ object Lexer {
     case '('                           => (Some(LeftParenthesisToken), str.tail)
     case ')'                           => (Some(RightParenthesisToken), str.tail)
     case '='                           => (Some(EqualsToken), str.tail)
-    case ';'                           => (Some(SemicolonToken), str.tail)
+    case ';' => (Some(SemicolonToken), str.tail)
+    case '\n' if lastToken != Some(SemicolonToken)                    => (Some(SemicolonToken), str.tail)
+    case '\n' => (None, str.tail)
     case 'l' if isAssignStatement(str) => (Some(AssignToken), str.substring(3))
     case '"'                           => parseString(str)
     case '.'                           => parseFloat(str)
