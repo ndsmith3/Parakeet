@@ -15,3 +15,5 @@ project/plugins/project/
 .lib/
 
 .idea
+
+test.pkt
