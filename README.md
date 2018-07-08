@@ -7,13 +7,14 @@ Parakeet's goal is to be a language with pure functional features while remainin
 
 ## Use
 
-Parakeet is currently only usable as a REPL application.
+Parakeet is available to run as a REPL application as well as interpret source files.
 
 ### SBT Commands
 
  * `compile`: Compile the project
  * `test`: Compile the project and run the test suite
  * `run`: Compile the project and run the Parakeet REPL
+ * `run /path/to/sourcefile`: Compile the project and run the file located at `/path/to/sourcefile`
  * `clean`: Deletes files created by SBT
  * `package`: Produces a .jar artifact
  * `tasks`: See other available tasks
@@ -28,6 +29,7 @@ Parakeet is currently only usable as a REPL application.
 This section assumes you have a built version of Parakeet with the binary name `parakeet`
 
  * `parakeet`: Launches the REPL
+ * `parakeet /path/to/sourcefile`: Compile the project and run the file located at `/path/to/sourcefile`
 
 ## Todo
 * ~~AST Structure~~
@@ -40,7 +42,7 @@ This section assumes you have a built version of Parakeet with the binary name `
 * ~~Primitive Type Storage~~
 * ~~REPL storage between commands~~
 * ~~Error handling for Parsing and Runtime~~
-* Source files
+* ~~Source files~~
 * Function Declaration
 * Type Declaration
 * Type Restriction
