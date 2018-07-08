@@ -22,6 +22,7 @@ object Parser {
     def accumulateStatements(currTokens: List[Token], statements: AbstractSyntaxTrees): AbstractSyntaxTrees = {
       val (newStatement, nextTokens): IntermediateAST = statement(currTokens)
       val nextStatements: AbstractSyntaxTrees         = statements :+ newStatement
+      println(nextTokens)
       nextTokens match {
         case (SemicolonToken :: Nil) | Nil => nextStatements
         case SemicolonToken :: tail        => accumulateStatements(tail, nextStatements)

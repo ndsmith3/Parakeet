@@ -1,6 +1,6 @@
 package com.ndsmith3.parakeet.lexer
 
-import com.ndsmith3.parakeet.exception.UnexpectedCharacterException
+import com.ndsmith3.parakeet.exception.{ExpectedCharacterException, UnexpectedCharacterException}
 
 import scala.annotation.tailrec
 
@@ -17,33 +17,35 @@ object Lexer {
   }
 
   private def getToken(str: String, lastToken: Option[Token]): (Option[Token], String) = str.head match {
-    case ' '                           => (None, str.tail)
-    case '+'                           => (Some(AddToken), str.tail)
-    case '-'                           => (Some(SubtractToken), str.tail)
-    case '*'                           => (Some(MultiplyToken), str.tail)
-    case '/'                           => (Some(DivideToken), str.tail)
-    case '%'                           => (Some(ModulusToken), str.tail)
-    case '^'                           => (Some(PowerToken), str.tail)
-    case '('                           => (Some(LeftParenthesisToken), str.tail)
-    case ')'                           => (Some(RightParenthesisToken), str.tail)
-    case '='                           => (Some(EqualsToken), str.tail)
-    case ';' => (Some(SemicolonToken), str.tail)
-    case '\n' if lastToken != Some(SemicolonToken)                    => (Some(SemicolonToken), str.tail)
-    case '\n' => (None, str.tail)
-    case 'l' if isAssignStatement(str) => (Some(AssignToken), str.substring(3))
-    case '"'                           => parseString(str)
-    case '.'                           => parseFloat(str)
-    case char if char.isDigit          => parseNumber(str)
-    case char if char.isLetter         => parseConstantName(str)
-    case char                          => throw new UnexpectedCharacterException(char)
+    case ' '                                       => (None, str.tail)
+    case '+'                                       => (Some(AddToken), str.tail)
+    case '-'                                       => (Some(SubtractToken), str.tail)
+    case '*'                                       => (Some(MultiplyToken), str.tail)
+    case '/'                                       => (Some(DivideToken), str.tail)
+    case '%'                                       => (Some(ModulusToken), str.tail)
+    case '^'                                       => (Some(PowerToken), str.tail)
+    case '('                                       => (Some(LeftParenthesisToken), str.tail)
+    case ')'                                       => (Some(RightParenthesisToken), str.tail)
+    case '='                                       => (Some(EqualsToken), str.tail)
+    case ';'                                       => (Some(SemicolonToken), str.tail)
+    case '\n' if lastToken != Some(SemicolonToken) => (Some(SemicolonToken), str.tail)
+    case '\n'                                      => (None, str.tail)
+    case 'l' if isAssignStatement(str)             => (Some(AssignToken), str.substring(3))
+    case '"'                                       => parseString(str)
+    case '.'                                       => parseFloat(str)
+    case char if char.isDigit                      => parseNumber(str)
+    case char if char.isLetter                     => parseConstantName(str)
+    case char                                      => throw new UnexpectedCharacterException(char)
   }
 
   private def parseString(str: String): (Option[StringToken], String) = {
     def scan(currStr: String, currStringValue: String = ""): (Option[StringToken], String) =
-      currStr.head match {
-        case '"'  => (Some(StringToken(currStringValue)), currStr.tail)
-        case char => scan(currStr.tail, currStringValue + char)
-      }
+      if (currStr.isEmpty) throw new ExpectedCharacterException('"')
+      else
+        currStr.head match {
+          case '"'  => (Some(StringToken(currStringValue)), currStr.tail)
+          case char => scan(currStr.tail, currStringValue + char)
+        }
 
     // Scan on tail to avoid the first quotation mark
     scan(str.tail)
