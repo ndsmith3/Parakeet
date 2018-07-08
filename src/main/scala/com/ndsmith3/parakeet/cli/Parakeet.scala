@@ -26,8 +26,9 @@ object Parakeet extends App {
               scope = newScope
               println(ast)
             case Failure(exception) =>
+              throw exception
               println(ExceptionTranscriber.transcribe(exception.asInstanceOf[ParakeetException]))
-        }
+          }
       }
     }
   }
@@ -36,7 +37,7 @@ object Parakeet extends App {
     val source: String = Source.fromFile(filePath).getLines.mkString
 
     Try(Interpreter.interpret(source)) match {
-      case Success((ast, _)) => println(ast)
+      case Success((ast, _))  => println(ast)
       case Failure(exception) => println(ExceptionTranscriber.transcribe(exception.asInstanceOf[ParakeetException]))
     }
   }

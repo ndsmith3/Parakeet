@@ -36,7 +36,7 @@ object Parser {
     case _ :: (_: BinaryOperationToken) :: _ => expression(tokens)
     case AssignToken :: tail                 => assignStatement(tail)
     case ConstantToken(name) :: tail         => (ID(name), tail)
-    case _ :: tail         => factor(tokens)
+    case _ :: tail                           => factor(tokens)
     case Nil                                 => throw new ExpectedTokenException(SemicolonToken)
   }
 
@@ -131,7 +131,7 @@ object Parser {
 
     currTokens match {
       case RightParenthesisToken :: tail => (node, tail)
-      case _ => throw new NoClosingParenthesisException()
+      case _                             => throw new NoClosingParenthesisException()
     }
   }
 }

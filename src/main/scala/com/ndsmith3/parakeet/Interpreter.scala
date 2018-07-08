@@ -46,7 +46,7 @@ object Interpreter {
     def evalStatement(statement: AbstractSyntaxTree, scope: Map[String, Primitive]): InterpreterState =
       statement match {
         case Assignment(name, _) if scope contains name => throw new ReassignmentException(name)
-        case Assignment(name, value)                    => (statement, scope + (name -> visit(value, scope)._1))
+        case Assignment(name, value)                    => (statement, scope + (name -> astToPrimitive(visit(value, scope)._1)))
         case ID(_)                                      => (visit(statement, scope)._1, scope)
         case BinaryOperation(left, operator, right) =>
           (eval(operator, visit(left, scope)._1, visit(right, scope)._1), scope)
@@ -57,4 +57,5 @@ object Interpreter {
   }
 
   implicit def astToNumeric(ast: AbstractSyntaxTree): Numeric = ast.asInstanceOf[Numeric]
+  implicit def astToPrimitive(ast: AbstractSyntaxTree): Primitive = ast.asInstanceOf[Primitive]
 }
