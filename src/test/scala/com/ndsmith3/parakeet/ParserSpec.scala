@@ -73,12 +73,4 @@ class ParserSpec extends FlatSpec {
       Parser.parse(AssignToken :: ConstantToken("abcdefg") :: EqualsToken :: AssignToken :: Nil)
     }
   }
-
-  it should "throw an ExpectedExpressionException when user tries to nest assignments" in {
-    assertThrows[ExpectedExpressionException] {
-      Parser.parse(
-        AssignToken :: ConstantToken("abcdefg") :: EqualsToken :: AssignToken :: ConstantToken("abcdef") :: EqualsToken :: IntegerToken(
-          1) :: Nil)
-    }
-  }
 }
