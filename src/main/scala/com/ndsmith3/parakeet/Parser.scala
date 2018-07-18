@@ -114,7 +114,6 @@ object Parser {
     case (char: CharacterToken) :: tail => (Character(char.value), tail)
     case ConstantToken(name) :: tail    => (ID(name), tail)
     case LeftParenthesisToken :: tail   => innerExpression(tail)
-    case AssignToken :: tail            => assignStatement(tail)
     case unexpectedToken :: _           => throw new UnexpectedTokenException(unexpectedToken)
     case Nil                            => throw new Exception("No tokens found")
   }
