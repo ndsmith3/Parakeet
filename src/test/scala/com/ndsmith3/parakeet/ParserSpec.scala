@@ -73,4 +73,8 @@ class ParserSpec extends FlatSpec {
       Parser.parse(AssignToken :: ConstantToken("abcdefg") :: EqualsToken :: AssignToken :: Nil)
     }
   }
+
+  it should "return ID(\"foo\") when given ConstantToken(\"foo\")" in {
+    assert(Parser.parse(ConstantToken("foo") :: Nil) == CompoundStatement(List(ID("foo"))))
+  }
 }
