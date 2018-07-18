@@ -73,4 +73,8 @@ class LexerSpec extends FlatSpec {
       Lexer.tokenize("#")
     }
   }
+
+  it should "return ColonToken :: Nil when given \":\"" in {
+    assert(Lexer.tokenize(":") == ColonToken :: Nil)
+  }
 }

@@ -6,6 +6,7 @@ case object RightParenthesisToken      extends Token
 case object AssignToken                extends Token
 case object EqualsToken                extends Token
 case object SemicolonToken             extends Token
+case object ColonToken                 extends Token
 case class ConstantToken(name: String) extends Token
 
 trait PrimitiveToken extends Token {
