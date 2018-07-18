@@ -33,10 +33,9 @@ object Parser {
   }
 
   private def statement(tokens: List[Token]): (AbstractSyntaxTree, List[Token]) = tokens match {
-    case _ :: (_: BinaryOperationToken) :: _ => expression(tokens)
     case AssignToken :: tail                 => assignStatement(tail)
     case ConstantToken(name) :: tail         => (ID(name), tail)
-    case _ :: tail                           => factor(tokens)
+    case _ :: tail                           => expression(tokens)
     case Nil                                 => throw new ExpectedTokenException(SemicolonToken)
   }
 
