@@ -15,15 +15,15 @@ object ValueTable {
   }
 
   def addType(table: ValueTable, name: String, typeName: String): ValueTable = table.find(_.valueName == name) match {
-    case Some(TableEntry(_, actualType, _)) => throw new Exception("TODO")
     case None                               => TableEntry(name, typeName, None) :: table
+    case Some(TableEntry(_, actualType, _)) => throw new Exception("TODO")
   }
 
   def addValue(table: ValueTable, name: String, value: Primitive): ValueTable = table.find(_.valueName == name) match {
+    case Some(TableEntry(_, actualType, None)) if value.typeName == actualType =>
+      TableEntry(name, value.typeName, Some(value)) :: table
+    case Some(TableEntry(_, _, None))    => throw new Exception("TODO")
     case Some(TableEntry(_, _, Some(_))) => throw new ReassignmentException(name)
-    case Some(TableEntry(_, actualType, None)) =>
-      if (value.typeName == actualType) TableEntry(name, value.typeName, Some(value)) :: table
-      else throw new Exception("TODO")
-    case None => TableEntry(name, value.typeName, Some(value)) :: table
+    case None                            => TableEntry(name, value.typeName, Some(value)) :: table
   }
 }
