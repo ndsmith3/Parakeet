@@ -35,9 +35,11 @@ object Lexer {
     case '"'                                       => parseString(str)
     case '.'                                       => parseFloat(str)
     case char if char.isDigit                      => parseNumber(str)
-    case char if char.isLetter                     => parseConstantName(str)
+    case char if char.isLetter                     => parseID(str)
     case char                                      => throw new UnexpectedCharacterException(char)
   }
+
+  private def isAssignStatement(str: String): Boolean = str(1) == 'e' && str(2) == 't'
 
   private def parseString(str: String): (Option[StringToken], String) = {
     def scan(currStr: String, currStringValue: String = ""): (Option[StringToken], String) =
@@ -74,12 +76,10 @@ object Lexer {
     scan(str)
   }
 
-  private def isAssignStatement(str: String): Boolean = str(1) == 'e' && str(2) == 't'
-
-  private def parseConstantName(str: String): (Option[ConstantToken], String) = {
-    def scan(currStr: String, currNameString: String = ""): (Option[ConstantToken], String) =
-      if (currStr.isEmpty || currStr.head == ';') (Some(ConstantToken(currNameString)), "")
-      else if (currStr.head == ' ') (Some(ConstantToken(currNameString)), currStr.tail)
+  private def parseID(str: String): (Option[IDToken], String) = {
+    def scan(currStr: String, currNameString: String = ""): (Option[IDToken], String) =
+      if (currStr.isEmpty || currStr.head == ';') (Some(IDToken(currNameString)), "")
+      else if (currStr.head == ' ') (Some(IDToken(currNameString)), currStr.tail)
       else scan(currStr.tail, currNameString + currStr.head)
 
     scan(str)

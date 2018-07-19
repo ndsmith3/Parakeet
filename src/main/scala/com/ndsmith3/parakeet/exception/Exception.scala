@@ -7,6 +7,7 @@ class ParakeetException(val message: String) extends Throwable
 class NoClosingParenthesisException()             extends ParakeetException("Expected Closing Parenthesis.")
 class UnexpectedTokenException(token: Token)      extends ParakeetException(s"Unexpected Token: $token.")
 class ExpectedTokenException(token: Token)        extends ParakeetException(s"Expected Token: $token")
+class ExpectedTypeException                       extends ParakeetException(s"Expected Type Declaration")
 class UnexpectedCharacterException(char: Char)    extends ParakeetException(s"Unexpected Character: $char.")
 class ExpectedCharacterException(char: Char)      extends ParakeetException(s"Expected Character: $char.")
 class CharacterPowerException                     extends ParakeetException(s"Cannot perform exponential operation on Character.")

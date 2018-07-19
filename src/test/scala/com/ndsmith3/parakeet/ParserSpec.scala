@@ -49,10 +49,10 @@ class ParserSpec extends FlatSpec {
         List(BinaryOperation(Integer(2), Power, Integer(2)))))
   }
 
-  it should "return Assignment(\"abcdefg\", 2) when given AssignToken :: ConstantToken(\"abcdefg\") :: EqualsToken :: IntegerToken(2) :: Nil" in {
+  it should "return Assignment(\"abcdefg\", 2) when given AssignToken :: IDToken(\"abcdefg\") :: EqualsToken :: IntegerToken(2) :: Nil" in {
     assert(
       Parser
-        .parse(AssignToken :: ConstantToken("abcdefg") :: EqualsToken :: IntegerToken(2) :: Nil) == CompoundStatement(
+        .parse(AssignToken :: IDToken("abcdefg") :: EqualsToken :: IntegerToken(2) :: Nil) == CompoundStatement(
         List(Assignment("abcdefg", Integer(2)))))
   }
 
@@ -70,11 +70,11 @@ class ParserSpec extends FlatSpec {
 
   it should "throw an UnexpectedTokenException when there is no expression after an assignment" in {
     assertThrows[UnexpectedTokenException] {
-      Parser.parse(AssignToken :: ConstantToken("abcdefg") :: EqualsToken :: AssignToken :: Nil)
+      Parser.parse(AssignToken :: IDToken("abcdefg") :: EqualsToken :: AssignToken :: Nil)
     }
   }
 
-  it should "return ID(\"foo\") when given ConstantToken(\"foo\")" in {
-    assert(Parser.parse(ConstantToken("foo") :: Nil) == CompoundStatement(List(ID("foo"))))
+  it should "return TypeDeclaration(\"foo\", \"String\") when given IDToken(\"foo\") :: ColonToken :: IDToken(\"String\")" in {
+    assert(Parser.parse(IDToken("foo") :: ColonToken :: IDToken("String") :: Nil) == CompoundStatement(List(TypeDeclaration("foo", "String"))))
   }
 }

@@ -1,12 +1,7 @@
 package com.ndsmith3.parakeet
 
 import com.ndsmith3.parakeet.ast._
-import com.ndsmith3.parakeet.exception.{
-  ExpectedExpressionException,
-  NoClosingParenthesisException,
-  UnexpectedTokenException,
-  ExpectedTokenException
-}
+import com.ndsmith3.parakeet.exception._
 import com.ndsmith3.parakeet.lexer._
 
 import scala.annotation.tailrec
@@ -33,18 +28,19 @@ object Parser {
   }
 
   private def statement(tokens: List[Token]): (AbstractSyntaxTree, List[Token]) = tokens match {
-    case AssignToken :: tail                 => assignStatement(tail)
-    case ConstantToken(name) :: tail         => (ID(name), tail)
-    case _ :: tail                           => expression(tokens)
-    case Nil                                 => throw new ExpectedTokenException(SemicolonToken)
+    case AssignToken :: tail                       => assignStatement(tail)
+    case IDToken(name) :: ColonToken :: tail => typeDeclarationStatement(name, tail)
+    case IDToken(name) :: tail               => (ID(name), tail)
+    case _ :: tail                                 => expression(tokens)
+    case Nil                                       => throw new ExpectedTokenException(SemicolonToken)
   }
 
   private def assignStatement(tokens: List[Token]): IntermediateAST =
     tokens match {
-      case ConstantToken(name) :: EqualsToken :: tail =>
+      case IDToken(name) :: EqualsToken :: tail =>
         val (assignmentValue, remainingTokens) = expression(tail)
         (Assignment(name, assignmentValue), remainingTokens)
-      case _ => throw new UnexpectedTokenException(EqualsToken)
+      case _ => throw new ExpectedTokenException(EqualsToken)
     }
 
   private def expression(tokens: List[Token]): IntermediateAST = {
@@ -112,7 +108,7 @@ object Parser {
     case (float: FloatToken) :: tail    => (Float(float.value), tail)
     case (str: StringToken) :: tail     => (ASTString(str.value), tail)
     case (char: CharacterToken) :: tail => (Character(char.value), tail)
-    case ConstantToken(name) :: tail    => (ID(name), tail)
+    case IDToken(name) :: tail          => (ID(name), tail)
     case LeftParenthesisToken :: tail   => innerExpression(tail)
     case unexpectedToken :: _           => throw new UnexpectedTokenException(unexpectedToken)
     case Nil                            => throw new Exception("No tokens found")
@@ -124,6 +120,13 @@ object Parser {
     currTokens match {
       case RightParenthesisToken :: tail => (node, tail)
       case _                             => throw new NoClosingParenthesisException()
+    }
+  }
+
+  private def typeDeclarationStatement(constantName: String, tokens: List[Token]): IntermediateAST = {
+    tokens match {
+      case IDToken(typeName) :: tail => (TypeDeclaration(constantName, typeName), tail)
+      case _                         => throw new ExpectedTypeException()
     }
   }
 }
