@@ -14,3 +14,8 @@ class CharacterPowerException                     extends ParakeetException(s"Ca
 class ExpectedExpressionException                 extends ParakeetException(s"Expected Expression.")
 class UnknownTokenException(constantName: String) extends ParakeetException(s"Unknown Token: $constantName")
 class ReassignmentException(constantName: String) extends ParakeetException(s"Cannot rewrite constant: $constantName")
+class IdentifierUndefinedException(id: String)    extends ParakeetException(s"Identifier $id is undefined")
+class TypeDefinedException(id: String)            extends ParakeetException(s"Type of $id is already defined.")
+
+class IncompatibleTypeException(id: String, actualType: String, newType: String)
+    extends ParakeetException(s"Type of $id is defined as $actualType and is incompatible with type $newType")

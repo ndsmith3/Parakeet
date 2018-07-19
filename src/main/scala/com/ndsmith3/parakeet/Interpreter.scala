@@ -41,10 +41,10 @@ object Interpreter {
 
     def evalStatement(statement: AbstractSyntaxTree, valueTable: ValueTable): InterpreterState =
       statement match {
-        case Assignment(name, value) => (statement, ValueTable.addValue(valueTable, name, astToPrimitive(value)))
+        case Assignment(name, value)         => (statement, ValueTable.addValue(valueTable, name, astToPrimitive(value)))
         case TypeDeclaration(name, typeName) => (statement, ValueTable.addType(valueTable, name, typeName))
-        case ID(_)                   => (visit(statement, valueTable)._1, valueTable)
-        case ast                     => (visit(ast, valueTable)._1, valueTable)
+        case ID(_)                           => (visit(statement, valueTable)._1, valueTable)
+        case ast                             => (visit(ast, valueTable)._1, valueTable)
       }
 
     traverse(compoundStatement.statements, valueTable)
