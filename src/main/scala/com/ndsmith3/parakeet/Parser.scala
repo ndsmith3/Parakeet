@@ -6,6 +6,8 @@ import com.ndsmith3.parakeet.lexer._
 
 import scala.annotation.tailrec
 
+// TODO: Find out why type declarations require semicolons
+
 object Parser {
   type IntermediateAST     = (AbstractSyntaxTree, List[Token])
   type AbstractSyntaxTrees = List[AbstractSyntaxTree]
@@ -20,7 +22,9 @@ object Parser {
       nextTokens match {
         case (SemicolonToken :: Nil) | Nil => nextStatements
         case SemicolonToken :: tail        => accumulateStatements(tail, nextStatements)
-        case _                             => throw new ExpectedTokenException(SemicolonToken)
+        case _                             =>
+          println(currTokens)
+          throw new ExpectedTokenException(SemicolonToken)
       }
     }
 
