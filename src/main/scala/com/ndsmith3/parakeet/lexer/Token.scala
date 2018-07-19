@@ -1,13 +1,13 @@
 package com.ndsmith3.parakeet.lexer
 
 trait Token
-case object LeftParenthesisToken       extends Token
-case object RightParenthesisToken      extends Token
-case object AssignToken                extends Token
-case object EqualsToken                extends Token
-case object SemicolonToken             extends Token
-case object ColonToken                 extends Token
-case class IDToken(name: String) extends Token
+case object LeftParenthesisToken  extends Token
+case object RightParenthesisToken extends Token
+case object AssignToken           extends Token
+case object EqualsToken           extends Token
+case object SemicolonToken        extends Token
+case object ColonToken            extends Token
+case class IDToken(name: String)  extends Token
 
 trait PrimitiveToken extends Token {
   val value: Any

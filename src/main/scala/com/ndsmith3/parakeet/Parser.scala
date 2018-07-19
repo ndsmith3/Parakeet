@@ -28,11 +28,11 @@ object Parser {
   }
 
   private def statement(tokens: List[Token]): (AbstractSyntaxTree, List[Token]) = tokens match {
-    case AssignToken :: tail                       => assignStatement(tail)
+    case AssignToken :: tail                 => assignStatement(tail)
     case IDToken(name) :: ColonToken :: tail => typeDeclarationStatement(name, tail)
     case IDToken(name) :: tail               => (ID(name), tail)
-    case _ :: tail                                 => expression(tokens)
-    case Nil                                       => throw new ExpectedTokenException(SemicolonToken)
+    case _ :: tail                           => expression(tokens)
+    case Nil                                 => throw new ExpectedTokenException(SemicolonToken)
   }
 
   private def assignStatement(tokens: List[Token]): IntermediateAST =

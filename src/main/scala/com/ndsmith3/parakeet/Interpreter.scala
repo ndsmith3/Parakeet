@@ -32,8 +32,8 @@ object Interpreter {
   private def execute(compoundStatement: CompoundStatement, valueTable: ValueTable): InterpreterState = {
     def traverse(statements: List[AbstractSyntaxTree], currvalueTable: ValueTable): InterpreterState =
       statements match {
-        case Nil               => throw new Exception("Passed Nil")
-        case statement :: Nil  => evalStatement(statement, currvalueTable)
+        case Nil              => throw new Exception("Passed Nil")
+        case statement :: Nil => evalStatement(statement, currvalueTable)
         case statement :: tail =>
           val (_, newvalueTable) = evalStatement(statement, currvalueTable)
           traverse(tail, newvalueTable)

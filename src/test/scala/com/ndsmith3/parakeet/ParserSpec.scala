@@ -75,6 +75,8 @@ class ParserSpec extends FlatSpec {
   }
 
   it should "return TypeDeclaration(\"foo\", \"String\") when given IDToken(\"foo\") :: ColonToken :: IDToken(\"String\")" in {
-    assert(Parser.parse(IDToken("foo") :: ColonToken :: IDToken("String") :: Nil) == CompoundStatement(List(TypeDeclaration("foo", "String"))))
+    assert(
+      Parser.parse(IDToken("foo") :: ColonToken :: IDToken("String") :: Nil) == CompoundStatement(
+        List(TypeDeclaration("foo", "String"))))
   }
 }

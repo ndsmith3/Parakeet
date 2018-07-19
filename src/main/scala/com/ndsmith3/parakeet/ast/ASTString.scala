@@ -6,6 +6,6 @@ package com.ndsmith3.parakeet.ast
  */
 
 case class ASTString(value: String) extends Primitive {
-  override val typeName = "String"
+  override val typeName         = "String"
   override def toString: String = value
 }
