@@ -3,6 +3,8 @@ package com.ndsmith3.parakeet.cli
 import com.ndsmith3.parakeet.Interpreter
 import com.ndsmith3.parakeet.ast.{AbstractSyntaxTree, Primitive}
 import com.ndsmith3.parakeet.exception.{ExceptionTranscriber, ParakeetException}
+import com.ndsmith3.parakeet.storage.ValueTable.ValueTable
+import com.ndsmith3.parakeet.storage.ValueTable
 
 import scala.io.StdIn.readLine
 import scala.io.Source
@@ -15,24 +17,24 @@ object Parakeet extends App {
   }
 
   def repl: Unit = {
-    var scope: Map[String, Primitive] = Map()
+    var valueTable: ValueTable = Nil
     while (true) {
       readLine("parakeet> ") match {
         case "exit" | null => sys.exit(0)
-        case source        => scope = runSource(source, scope)
+        case source        => valueTable = runSource(source, valueTable)
       }
     }
   }
 
   def runFile(filePath: String): Unit = runSource(Source.fromFile(filePath).getLines.mkString("\n"))
 
-  def runSource(sourceString: String, scope: Map[String, Primitive] = Map()): Map[String, Primitive] =
-    Try(Interpreter.interpret(sourceString, scope)) match {
-      case Success((ast, newScope)) =>
+  def runSource(sourceString: String, valueTable: ValueTable = Nil): ValueTable =
+    Try(Interpreter.interpret(sourceString, valueTable)) match {
+      case Success((ast, newTable)) =>
         println(ast)
-        newScope
+        newTable
       case Failure(exception) =>
         println(ExceptionTranscriber.transcribe(exception.asInstanceOf[ParakeetException]))
-        scope
+        valueTable
     }
 }

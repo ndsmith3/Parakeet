@@ -15,6 +15,8 @@ trait Numeric extends Primitive {
 }
 
 case class Integer(value: Int) extends Numeric {
+  override val typeName = "Int"
+
   override def +(that: Numeric): Numeric = that match {
     case Integer(thatValue)   => Integer(value + thatValue)
     case Float(thatValue)     => Float(value + thatValue)
@@ -53,6 +55,8 @@ case class Integer(value: Int) extends Numeric {
 }
 
 case class Float(value: Double) extends Numeric {
+  override val typeName = "Float"
+
   override def +(that: Numeric): Numeric = that match {
     case Integer(thatValue)   => Float(value + thatValue)
     case Float(thatValue)     => Float(value + thatValue)
@@ -91,6 +95,8 @@ case class Float(value: Double) extends Numeric {
 }
 
 case class Character(value: Char) extends Numeric {
+  override val typeName = "Char"
+
   override def +(that: Numeric): Numeric = that match {
     case Integer(thatValue)   => Integer(value + thatValue)
     case Float(thatValue)     => Float(value + thatValue)

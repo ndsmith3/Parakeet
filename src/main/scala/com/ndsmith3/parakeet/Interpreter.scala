@@ -4,56 +4,49 @@ import com.ndsmith3.parakeet.ast._
 import com.ndsmith3.parakeet.ast.Operator.eval
 import com.ndsmith3.parakeet.exception.{ReassignmentException, UnknownTokenException}
 import com.ndsmith3.parakeet.lexer.{Lexer, Token}
+import com.ndsmith3.parakeet.storage.ValueTable.ValueTable
+import com.ndsmith3.parakeet.storage.ValueTable
 
 import scala.language.implicitConversions
 
 object Interpreter {
-  type InterpreterState = (AbstractSyntaxTree, Map[String, Primitive])
+  type InterpreterState = (AbstractSyntaxTree, ValueTable)
 
-  def interpret(input: String, scope: Map[String, Primitive] = Map()): InterpreterState = {
+  def interpret(input: String, valueTable: ValueTable = Nil): InterpreterState = {
     val tokens: List[Token]                  = Lexer.tokenize(input)
     val compoundStatement: CompoundStatement = Parser.parse(tokens)
-    execute(compoundStatement, scope)
+    execute(compoundStatement, valueTable)
   }
 
-  private def visit(abstractSyntaxTree: AbstractSyntaxTree, scope: Map[String, Primitive] = Map()): InterpreterState =
+  private def visit(abstractSyntaxTree: AbstractSyntaxTree, valueTable: ValueTable = Nil): InterpreterState =
     abstractSyntaxTree match {
-      case int: Integer     => (int, scope)
-      case float: Float     => (float, scope)
-      case char: Character  => (char, scope)
-      case str: ASTString   => (str, scope)
-      case ID(constantName) => (getConstant(constantName, scope), scope)
+      case int: Integer     => (int, valueTable)
+      case float: Float     => (float, valueTable)
+      case char: Character  => (char, valueTable)
+      case str: ASTString   => (str, valueTable)
+      case ID(constantName) => (ValueTable.get(valueTable, constantName), valueTable)
       case BinaryOperation(left, operator, right) =>
-        (eval(operator, visit(left, scope)._1, visit(right, scope)._1), scope)
+        (eval(operator, visit(left, valueTable)._1, visit(right, valueTable)._1), valueTable)
     }
 
-  private def getConstant(constantName: String, scope: Map[String, Primitive]): AbstractSyntaxTree =
-    scope.get(constantName) match {
-      case Some(primitive) => primitive
-      case None            => throw new UnknownTokenException(constantName)
-    }
-
-  private def execute(compoundStatement: CompoundStatement, scope: Map[String, Primitive]): InterpreterState = {
-    def traverse(statements: List[AbstractSyntaxTree], currScope: Map[String, Primitive]): InterpreterState =
+  private def execute(compoundStatement: CompoundStatement, valueTable: ValueTable): InterpreterState = {
+    def traverse(statements: List[AbstractSyntaxTree], currvalueTable: ValueTable): InterpreterState =
       statements match {
-        case Nil              => throw new Exception("Passed Nil")
-        case statement :: Nil => evalStatement(statement, currScope)
+        case Nil               => throw new Exception("Passed Nil")
+        case statement :: Nil  => evalStatement(statement, currvalueTable)
         case statement :: tail =>
-          val (_, newScope) = evalStatement(statement, currScope)
-          traverse(tail, newScope)
+          val (_, newvalueTable) = evalStatement(statement, currvalueTable)
+          traverse(tail, newvalueTable)
       }
 
-    def evalStatement(statement: AbstractSyntaxTree, scope: Map[String, Primitive]): InterpreterState =
+    def evalStatement(statement: AbstractSyntaxTree, valueTable: ValueTable): InterpreterState =
       statement match {
-        case Assignment(name, _) if scope contains name => throw new ReassignmentException(name)
-        case Assignment(name, value)                    => (statement, scope + (name -> astToPrimitive(visit(value, scope)._1)))
-        case ID(_)                                      => (visit(statement, scope)._1, scope)
-        case BinaryOperation(left, operator, right) =>
-          (eval(operator, visit(left, scope)._1, visit(right, scope)._1), scope)
-        case ast => (visit(ast, scope)._1, scope)
+        case Assignment(name, value) => (statement, ValueTable.addValue(valueTable, name, astToPrimitive(value)))
+        case ID(_)                   => (visit(statement, valueTable)._1, valueTable)
+        case ast                     => (visit(ast, valueTable)._1, valueTable)
       }
 
-    traverse(compoundStatement.statements, scope)
+    traverse(compoundStatement.statements, valueTable)
   }
 
   implicit def astToNumeric(ast: AbstractSyntaxTree): Numeric     = ast.asInstanceOf[Numeric]
