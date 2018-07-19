@@ -44,8 +44,8 @@ This section assumes you have a built version of Parakeet with the binary name `
 * ~~Error handling for Parsing and Runtime~~
 * ~~Source files~~
 * Function Declaration
-* Type Declaration
-* Type Restriction
+* ~~Type Declaration~~
+* ~~Type Restriction~~
 * Algebraic Data Type evalution
 * String Data Type
 * Entrypoint definition
