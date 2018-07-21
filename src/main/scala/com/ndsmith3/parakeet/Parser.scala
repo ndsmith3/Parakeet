@@ -6,8 +6,6 @@ import com.ndsmith3.parakeet.lexer._
 
 import scala.annotation.tailrec
 
-// TODO: Find out why type declarations require semicolons
-
 object Parser {
   type IntermediateAST     = (AbstractSyntaxTree, List[Token])
   type AbstractSyntaxTrees = List[AbstractSyntaxTree]
@@ -22,9 +20,7 @@ object Parser {
       nextTokens match {
         case (SemicolonToken :: Nil) | Nil => nextStatements
         case SemicolonToken :: tail        => accumulateStatements(tail, nextStatements)
-        case _                             =>
-          println(currTokens)
-          throw new ExpectedTokenException(SemicolonToken)
+        case _                             => throw new ExpectedTokenException(SemicolonToken)
       }
     }
 
@@ -114,8 +110,9 @@ object Parser {
     case (char: CharacterToken) :: tail => (Character(char.value), tail)
     case IDToken(name) :: tail          => (ID(name), tail)
     case LeftParenthesisToken :: tail   => innerExpression(tail)
-    case unexpectedToken :: _           => throw new UnexpectedTokenException(unexpectedToken)
-    case Nil                            => throw new Exception("No tokens found")
+    case unexpectedToken :: _ =>
+      throw new UnexpectedTokenException(unexpectedToken)
+    case Nil => throw new Exception("No tokens found")
   }
 
   private def innerExpression(tokens: List[Token]): IntermediateAST = {

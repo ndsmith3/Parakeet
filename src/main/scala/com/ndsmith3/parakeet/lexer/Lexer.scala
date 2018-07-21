@@ -16,28 +16,29 @@ object Lexer {
     tokenizeInput(input)
   }
 
-  private def getToken(str: String, lastToken: Option[Token]): (Option[Token], String) = str.head match {
-    case ' '                                       => (None, str.tail)
-    case '+'                                       => (Some(AddToken), str.tail)
-    case '-'                                       => (Some(SubtractToken), str.tail)
-    case '*'                                       => (Some(MultiplyToken), str.tail)
-    case '/'                                       => (Some(DivideToken), str.tail)
-    case '%'                                       => (Some(ModulusToken), str.tail)
-    case '^'                                       => (Some(PowerToken), str.tail)
-    case '('                                       => (Some(LeftParenthesisToken), str.tail)
-    case ')'                                       => (Some(RightParenthesisToken), str.tail)
-    case ':'                                       => (Some(ColonToken), str.tail)
-    case '='                                       => (Some(EqualsToken), str.tail)
-    case ';'                                       => (Some(SemicolonToken), str.tail)
-    case '\n' if lastToken != Some(SemicolonToken) => (Some(SemicolonToken), str.tail)
-    case '\n'                                      => (None, str.tail)
-    case 'l' if isAssignStatement(str)             => (Some(AssignToken), str.substring(3))
-    case '"'                                       => parseString(str)
-    case '.'                                       => parseFloat(str)
-    case char if char.isDigit                      => parseNumber(str)
-    case char if char.isLetter                     => parseID(str)
-    case char                                      => throw new UnexpectedCharacterException(char)
-  }
+  private def getToken(str: String, lastToken: Option[Token]): (Option[Token], String) =
+    str.head match {
+      case ' '                                                            => (None, str.tail)
+      case '+'                                                            => (Some(AddToken), str.tail)
+      case '-'                                                            => (Some(SubtractToken), str.tail)
+      case '*'                                                            => (Some(MultiplyToken), str.tail)
+      case '/'                                                            => (Some(DivideToken), str.tail)
+      case '%'                                                            => (Some(ModulusToken), str.tail)
+      case '^'                                                            => (Some(PowerToken), str.tail)
+      case '('                                                            => (Some(LeftParenthesisToken), str.tail)
+      case ')'                                                            => (Some(RightParenthesisToken), str.tail)
+      case ':'                                                            => (Some(ColonToken), str.tail)
+      case '='                                                            => (Some(EqualsToken), str.tail)
+      case ';'                                                            => (Some(SemicolonToken), str.tail)
+      case '\n' if lastToken == Some(SemicolonToken) || lastToken == None => (None, str.tail)
+      case '\n'                                                           => (Some(SemicolonToken), str.tail)
+      case 'l' if isAssignStatement(str)                                  => (Some(AssignToken), str.substring(3))
+      case '"'                                                            => parseString(str)
+      case '.'                                                            => parseFloat(str)
+      case char if char.isDigit                                           => parseNumber(str)
+      case char if char.isLetter                                          => parseID(str)
+      case char                                                           => throw new UnexpectedCharacterException(char)
+    }
 
   private def isAssignStatement(str: String): Boolean = str(1) == 'e' && str(2) == 't'
 
