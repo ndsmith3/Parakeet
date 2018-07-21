@@ -16,6 +16,7 @@ class UnknownTokenException(constantName: String) extends ParakeetException(s"Un
 class ReassignmentException(constantName: String) extends ParakeetException(s"Cannot rewrite constant: $constantName")
 class IdentifierUndefinedException(id: String)    extends ParakeetException(s"Identifier $id is undefined")
 class TypeDefinedException(id: String)            extends ParakeetException(s"Type of $id is already defined.")
+class ExpectedArgumentException                   extends ParakeetException(s"Expected an argument")
 
 class IncompatibleTypeException(id: String, actualType: String, newType: String)
     extends ParakeetException(s"Type of $id is defined as $actualType and is incompatible with type $newType")
