@@ -9,6 +9,7 @@ case object AssignToken           extends Token
 case object EqualsToken           extends Token
 case object SemicolonToken        extends Token
 case object ColonToken            extends Token
+case object CommaToken            extends Token
 case class IDToken(name: String)  extends Token
 
 trait PrimitiveToken extends Token {

@@ -40,7 +40,24 @@ object Parser {
       case IDToken(name) :: EqualsToken :: tail =>
         val (assignmentValue, remainingTokens) = expression(tail)
         (Assignment(name, assignmentValue), remainingTokens)
+      case IDToken(name) :: LeftParenthesisToken :: tail =>
+        val (args, assignmentTokens) = getArgs(tail)
+        assignmentTokens match {
+          case EqualsToken :: expressionTokens =>
+            val (expressionValue, remainingTokens) = expression(expressionTokens)
+            (Function(name, args, expressionValue), remainingTokens)
+          case _ => throw new ExpectedTokenException(EqualsToken)
+        }
       case _ => throw new ExpectedTokenException(EqualsToken)
+    }
+
+  private def getArgs(tokens: List[Token], args: List[TypeDeclaration] = Nil): (List[TypeDeclaration], List[Token]) =
+    tokens match {
+      case IDToken(argName) :: ColonToken :: IDToken(argType) :: CommaToken :: tail =>
+        getArgs(tail, args :+ TypeDeclaration(argName, argType))
+      case IDToken(argName) :: ColonToken :: IDToken(argType) :: RightParenthesisToken :: tail =>
+        (args :+ TypeDeclaration(argName, argType), tail)
+      case _ => throw new ParakeetException("TODO: Expected Argument Exception")
     }
 
   private def expression(tokens: List[Token]): IntermediateAST = {

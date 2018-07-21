@@ -35,6 +35,7 @@ object Lexer {
       case '\n' if lastToken == Some(SemicolonToken) || lastToken == None => (None, str.tail)
       case '\n'                                                           => (Some(SemicolonToken), str.tail)
       case 'l' if isAssignStatement(str)                                  => (Some(AssignToken), str.substring(3))
+      case ','                                                            => (Some(CommaToken), str.tail)
       case '"'                                                            => parseString(str)
       case '.'                                                            => parseFloat(str)
       case char if char.isDigit                                           => parseNumber(str)
