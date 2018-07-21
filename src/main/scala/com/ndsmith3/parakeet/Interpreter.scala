@@ -20,13 +20,13 @@ object Interpreter {
 
   private def visit(abstractSyntaxTree: AbstractSyntaxTree, valueTable: ValueTable = Nil): InterpreterState =
     abstractSyntaxTree match {
-      case int: Integer     => (int, valueTable)
-      case float: Float     => (float, valueTable)
-      case char: Character  => (char, valueTable)
-      case str: ASTString   => (str, valueTable)
+      case int: Integer    => (int, valueTable)
+      case float: Float    => (float, valueTable)
+      case char: Character => (char, valueTable)
+      case str: ASTString  => (str, valueTable)
       case FunctionCall(name, args) =>
         val function = ValueTable.get(valueTable, name).asInstanceOf[Function]
-        val functionTypeValueTable: ValueTable = function.args.foldLeft(valueTable){ (table, decl) =>
+        val functionTypeValueTable: ValueTable = function.args.foldLeft(valueTable) { (table, decl) =>
           ValueTable.addType(table, decl.constantName, decl.constantType)
         }
         val functionValueTable: ValueTable = loadValues(valueTable, function.args, args)
@@ -37,13 +37,18 @@ object Interpreter {
         (eval(operator, visit(left, valueTable)._1, visit(right, valueTable)._1), valueTable)
     }
 
-  private def loadValues(table: ValueTable, argSpec: List[TypeDeclaration], args: List[AbstractSyntaxTree]): ValueTable = {
-    def loadValue(currTable: ValueTable, currSpec: List[TypeDeclaration], currArgs: List[AbstractSyntaxTree]): ValueTable = {
+  private def loadValues(table: ValueTable,
+                         argSpec: List[TypeDeclaration],
+                         args: List[AbstractSyntaxTree]): ValueTable = {
+    def loadValue(currTable: ValueTable,
+                  currSpec: List[TypeDeclaration],
+                  currArgs: List[AbstractSyntaxTree]): ValueTable = {
       (currSpec, currArgs) match {
         case (Nil, Nil) => currTable
         case (_, Nil)   => throw new ParakeetException("TODO: Not enough args")
         case (Nil, _)   => throw new ParakeetException("TODO: Too many args")
-        case ((spec :: specTail), (arg :: argTail)) => loadValue(ValueTable.addValue(currTable, spec.constantName, astToPrimitive(arg)), specTail, argTail)
+        case ((spec :: specTail), (arg :: argTail)) =>
+          loadValue(ValueTable.addValue(currTable, spec.constantName, astToPrimitive(arg)), specTail, argTail)
       }
     }
 
@@ -62,8 +67,10 @@ object Interpreter {
 
     def evalStatement(statement: AbstractSyntaxTree, valueTable: ValueTable): InterpreterState = {
       statement match {
-        case Assignment(name, value)         => (statement, ValueTable.addValue(valueTable, name, astToPrimitive(visit(value, valueTable)._1)))
-        case Function(name, args, value)     => (statement, ValueTable.addValue(valueTable, name, astToPrimitive(statement)))
+        case Assignment(name, value) =>
+          (statement, ValueTable.addValue(valueTable, name, astToPrimitive(visit(value, valueTable)._1)))
+        case Function(name, args, value) =>
+          (statement, ValueTable.addValue(valueTable, name, astToPrimitive(statement)))
         case TypeDeclaration(name, typeName) => (statement, ValueTable.addType(valueTable, name, typeName))
         case ID(_)                           => (visit(statement, valueTable)._1, valueTable)
         case ast                             => (visit(ast, valueTable)._1, valueTable)

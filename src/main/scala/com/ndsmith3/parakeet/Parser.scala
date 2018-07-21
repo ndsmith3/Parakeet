@@ -29,12 +29,12 @@ object Parser {
   }
 
   private def statement(tokens: List[Token]): (AbstractSyntaxTree, List[Token]) = tokens match {
-    case AssignToken :: tail                 => assignStatement(tail)
-    case IDToken(name) :: ColonToken :: tail => typeDeclarationStatement(name, tail)
+    case AssignToken :: tail                           => assignStatement(tail)
+    case IDToken(name) :: ColonToken :: tail           => typeDeclarationStatement(name, tail)
     case IDToken(name) :: LeftParenthesisToken :: tail => functionCall(name, tail)
-    case IDToken(name) :: tail               => (ID(name), tail)
-    case _ :: tail                           => expression(tokens)
-    case Nil                                 => throw new ExpectedTokenException(SemicolonToken)
+    case IDToken(name) :: tail                         => (ID(name), tail)
+    case _ :: tail                                     => expression(tokens)
+    case Nil                                           => throw new ExpectedTokenException(SemicolonToken)
   }
 
   private def assignStatement(tokens: List[Token]): IntermediateAST =
@@ -155,12 +155,13 @@ object Parser {
   }
 
   private def parseArgs(tokens: List[Token]): (List[AbstractSyntaxTree], List[Token]) = {
-    def getNextArg(currTokens: List[Token], currArgs: List[AbstractSyntaxTree] = Nil): (List[AbstractSyntaxTree], List[Token]) = {
+    def getNextArg(currTokens: List[Token],
+                   currArgs: List[AbstractSyntaxTree] = Nil): (List[AbstractSyntaxTree], List[Token]) = {
       val (nextArg, nextTokens) = statement(currTokens)
       nextTokens match {
-        case CommaToken :: tail => getNextArg(tail, nextArg +: currArgs)
+        case CommaToken :: tail            => getNextArg(tail, nextArg +: currArgs)
         case RightParenthesisToken :: tail => (nextArg +: currArgs, tail)
-        case _ => throw new ExpectedArgumentException()
+        case _                             => throw new ExpectedArgumentException()
       }
     }
 
