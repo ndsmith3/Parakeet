@@ -27,6 +27,8 @@ object Lexer {
       case '^'                                                            => (Some(PowerToken), str.tail)
       case '('                                                            => (Some(LeftParenthesisToken), str.tail)
       case ')'                                                            => (Some(RightParenthesisToken), str.tail)
+      case '{'                                                            => (Some(OpenBraceToken), str.tail)
+      case '}'                                                            => (Some(CloseBraceToken), str.tail)
       case ':'                                                            => (Some(ColonToken), str.tail)
       case '='                                                            => (Some(EqualsToken), str.tail)
       case ';'                                                            => (Some(SemicolonToken), str.tail)

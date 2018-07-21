@@ -3,6 +3,8 @@ package com.ndsmith3.parakeet.lexer
 trait Token
 case object LeftParenthesisToken  extends Token
 case object RightParenthesisToken extends Token
+case object OpenBraceToken        extends Token
+case object CloseBraceToken       extends Token
 case object AssignToken           extends Token
 case object EqualsToken           extends Token
 case object SemicolonToken        extends Token

@@ -77,4 +77,12 @@ class LexerSpec extends FlatSpec {
   it should "return ColonToken :: Nil when given \":\"" in {
     assert(Lexer.tokenize(":") == ColonToken :: Nil)
   }
+
+  it should "return OpenBraceToken :: Nil when given \"{\"" in {
+    assert(Lexer.tokenize("{") == OpenBraceToken :: Nil)
+  }
+
+  it should "return CloseBraceToken :: Nil when given \"{\"" in {
+    assert(Lexer.tokenize("}") == CloseBraceToken :: Nil)
+  }
 }
