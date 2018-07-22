@@ -159,8 +159,8 @@ object Parser {
                    currArgs: List[AbstractSyntaxTree] = Nil): (List[AbstractSyntaxTree], List[Token]) = {
       val (nextArg, nextTokens) = statement(currTokens)
       nextTokens match {
-        case CommaToken :: tail            => getNextArg(tail, nextArg +: currArgs)
-        case RightParenthesisToken :: tail => (nextArg +: currArgs, tail)
+        case CommaToken :: tail            => getNextArg(tail, currArgs :+ nextArg)
+        case RightParenthesisToken :: tail => (currArgs :+ nextArg, tail)
         case _                             => throw new ExpectedArgumentException()
       }
     }

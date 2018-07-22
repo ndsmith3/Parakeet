@@ -80,9 +80,11 @@ object Lexer {
     scan(str)
   }
 
+  private val unallowedTokens = Set(',', ';', ':', '(', ')', '\n', '/', '+', '-', '*')
+
   private def parseID(str: String): (Option[IDToken], String) = {
     def scan(currStr: String, currNameString: String = ""): (Option[IDToken], String) =
-      if (currStr.isEmpty || (Set(',', ';', ':', '(', ')', '\n') contains currStr.head))
+      if (currStr.isEmpty || (unallowedTokens contains currStr.head))
         (Some(IDToken(currNameString)), currStr)
       else if (currStr.head == ' ') (Some(IDToken(currNameString)), currStr.tail)
       else scan(currStr.tail, currNameString + currStr.head)
