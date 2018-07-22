@@ -14,6 +14,7 @@ object Parser {
   private def compoundExpression(tokens: List[Token]): CompoundStatement = CompoundStatement(statementList(tokens))
 
   private def statementList(tokens: List[Token]): AbstractSyntaxTrees = {
+    @tailrec
     def accumulateStatements(currTokens: List[Token], statements: AbstractSyntaxTrees): AbstractSyntaxTrees = {
       val (newStatement, nextTokens): IntermediateAST = statement(currTokens)
       val nextStatements: AbstractSyntaxTrees         = statements :+ newStatement
@@ -39,19 +40,24 @@ object Parser {
 
   private def assignStatement(tokens: List[Token]): IntermediateAST =
     tokens match {
-      case IDToken(name) :: EqualsToken :: tail =>
-        val (assignmentValue, remainingTokens) = statement(tail)
-        (Assignment(name, assignmentValue), remainingTokens)
-      case IDToken(name) :: LeftParenthesisToken :: tail =>
-        val (args, assignmentTokens) = getArgs(tail)
-        assignmentTokens match {
-          case EqualsToken :: expressionTokens =>
-            val (expressionValue, remainingTokens) = expression(expressionTokens)
-            (Function(name, args, expressionValue), remainingTokens)
-          case _ => throw new ExpectedTokenException(EqualsToken)
-        }
-      case _ => throw new ExpectedTokenException(EqualsToken)
+      case IDToken(name) :: EqualsToken :: tail          => assignConstant(name, tail)
+      case IDToken(name) :: LeftParenthesisToken :: tail => assignFunction(name, tail)
+      case _                                             => throw new ExpectedTokenException(EqualsToken)
     }
+
+  private def assignConstant(name: String, tokens: List[Token]): IntermediateAST = {
+    val (assignmentValue, remainingTokens) = statement(tokens)
+    (Assignment(name, assignmentValue), remainingTokens)
+  }
+
+  private def assignFunction(name: String, tokens: List[Token]): IntermediateAST = {
+    val (args, assignmentTokens) = getArgs(tokens)
+
+    assignmentTokens match {
+      case EqualsToken :: expressionTokens => evalFunction(name, args, expressionTokens)
+      case _                               => throw new ExpectedTokenException(EqualsToken)
+    }
+  }
 
   private def getArgs(tokens: List[Token], args: List[TypeDeclaration] = Nil): (List[TypeDeclaration], List[Token]) =
     tokens match {
@@ -61,6 +67,37 @@ object Parser {
         (args :+ TypeDeclaration(argName, argType), tail)
       case _ => throw new ParakeetException("TODO: Expected Argument Exception")
     }
+
+  private def evalFunction(name: String, args: List[TypeDeclaration], tokens: List[Token]): IntermediateAST = {
+    val (expressionValue, remainingTokens) = expression(tokens)
+    (Function(name, args, expressionValue), remainingTokens)
+  }
+
+  private def typeDeclarationStatement(constantName: String, tokens: List[Token]): IntermediateAST =
+    tokens match {
+      case IDToken(typeName) :: tail => (TypeDeclaration(constantName, typeName), tail)
+      case _                         => throw new ExpectedTypeException()
+    }
+
+  private def functionCall(name: String, tokens: List[Token]): IntermediateAST = {
+    val (args, remainingTokens) = parseArgs(tokens)
+    (FunctionCall(name, args), remainingTokens)
+  }
+
+  private def parseArgs(tokens: List[Token]): (List[AbstractSyntaxTree], List[Token]) = {
+    @tailrec
+    def getNextArg(currTokens: List[Token],
+                   currArgs: List[AbstractSyntaxTree] = Nil): (List[AbstractSyntaxTree], List[Token]) = {
+      val (nextArg, nextTokens) = statement(currTokens)
+      nextTokens match {
+        case CommaToken :: tail            => getNextArg(tail, currArgs :+ nextArg)
+        case RightParenthesisToken :: tail => (currArgs :+ nextArg, tail)
+        case _                             => throw new ExpectedArgumentException()
+      }
+    }
+
+    getNextArg(tokens)
+  }
 
   private def expression(tokens: List[Token]): IntermediateAST = {
     val (beginningNode, currTokens) = term(tokens)
@@ -129,9 +166,8 @@ object Parser {
     case (char: CharacterToken) :: tail => (Character(char.value), tail)
     case IDToken(name) :: tail          => (ID(name), tail)
     case LeftParenthesisToken :: tail   => innerExpression(tail)
-    case unexpectedToken :: _ =>
-      throw new UnexpectedTokenException(unexpectedToken)
-    case Nil => throw new ParakeetException("No tokens found")
+    case unexpectedToken :: _           => throw new UnexpectedTokenException(unexpectedToken)
+    case Nil                            => throw new ParakeetException("No tokens found")
   }
 
   private def innerExpression(tokens: List[Token]): IntermediateAST = {
@@ -143,28 +179,4 @@ object Parser {
     }
   }
 
-  private def typeDeclarationStatement(constantName: String, tokens: List[Token]): IntermediateAST =
-    tokens match {
-      case IDToken(typeName) :: tail => (TypeDeclaration(constantName, typeName), tail)
-      case _                         => throw new ExpectedTypeException()
-    }
-
-  private def functionCall(name: String, tokens: List[Token]): IntermediateAST = {
-    val (args, remainingTokens) = parseArgs(tokens)
-    (FunctionCall(name, args), remainingTokens)
-  }
-
-  private def parseArgs(tokens: List[Token]): (List[AbstractSyntaxTree], List[Token]) = {
-    def getNextArg(currTokens: List[Token],
-                   currArgs: List[AbstractSyntaxTree] = Nil): (List[AbstractSyntaxTree], List[Token]) = {
-      val (nextArg, nextTokens) = statement(currTokens)
-      nextTokens match {
-        case CommaToken :: tail            => getNextArg(tail, currArgs :+ nextArg)
-        case RightParenthesisToken :: tail => (currArgs :+ nextArg, tail)
-        case _                             => throw new ExpectedArgumentException()
-      }
-    }
-
-    getNextArg(tokens)
-  }
 }
