@@ -67,13 +67,7 @@ class ParserSpec extends FlatSpec {
       Parser.parse(Nil)
     }
   }
-
-  it should "throw an UnexpectedTokenException when there is no expression after an assignment" in {
-    assertThrows[UnexpectedTokenException] {
-      Parser.parse(AssignToken :: IDToken("abcdefg") :: EqualsToken :: AssignToken :: Nil)
-    }
-  }
-
+  
   it should "return TypeDeclaration(\"foo\", \"String\") when given IDToken(\"foo\") :: ColonToken :: IDToken(\"String\")" in {
     assert(
       Parser.parse(IDToken("foo") :: ColonToken :: IDToken("String") :: Nil) == CompoundStatement(
